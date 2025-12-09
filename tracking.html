@@ -525,7 +525,7 @@
   <header>
     <div class="logo">
       <img src="https://cdn-icons-png.flaticon.com/512/2838/2838912.png" alt="logo"/>
-      <a href="swiggyhome.html" style="color:#1e293b; text-decoration:none;">ORDER TRACKING</a>
+      <a href="index.html" style="color:#1e293b; text-decoration:none;">ORDER TRACKING</a>
     </div>
     <nav class="nav-right">
       <a href="help.html" class="help-btn">
@@ -541,7 +541,7 @@
       <i class="fas fa-inbox"></i>
       <h3>No Orders Yet</h3>
       <p>Track your recent orders here. Start by placing an order!</p>
-      <a href="swiggyhome.html" class="btn btn-primary">Browse Restaurants</a>
+      <a href="index.html" class="btn btn-primary">Browse Restaurants</a>
     </div>
 
     <div id="orderContent" style="display: none;">
@@ -626,7 +626,7 @@
       <div class="action-buttons">
         <button id="markReceived" class="btn btn-success" style="display: none;">Mark as Received</button>
         <button id="cancelOrderBtn" class="btn btn-danger" style="display: none;">Cancel Order</button>
-        <a href="swiggyhome.html" class="btn btn-secondary">Order More</a>
+        <a href="index.html" class="btn btn-secondary">Order More</a>
       </div>
       <div id="cancelledMessage" class="cancelled-message" style="display: none;">
         <i class="fas fa-times-circle"></i> Order Cancelled Successfully! Reason: <span id="cancelReason"></span><br>Refund will be processed within 2-3 days. Redirecting to home...
@@ -770,7 +770,7 @@
         document.getElementById('cancelOrderBtn').style.display = 'none';
         document.getElementById('markReceived').style.display = 'none';
         // Redirect after 3 seconds
-        setTimeout(() => { window.location.href = 'swiggyhome.html'; }, 3000);
+        setTimeout(() => { window.location.href = 'index.html'; }, 3000);
       } else if (status === 'confirmed') {
         preparingCircle.classList.add('current');
       } else if (status === 'preparing') {
@@ -925,7 +925,7 @@
         cancelModal.style.display = 'none';
         
         // Redirect to home after 3 seconds
-        setTimeout(() => { window.location.href = 'swiggyhome.html'; }, 3000);
+        setTimeout(() => { window.location.href = 'index.html'; }, 3000);
       });
 
       markReceivedBtn.addEventListener('click', () => {
