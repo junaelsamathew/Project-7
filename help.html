@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Help & Support | Food Delivery</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root { --bg:#f8fafc; --text:#1a202c; --panel:#ffffff; --ring:#e2e8f0 }
+    .dark :root, .dark { --bg:#0f172a; --text:#e5e7eb; --panel:#0b1220; --ring:#1f2937 }
+    body { font-family: 'Poppins', sans-serif; background: var(--bg); margin: 0; color: var(--text); }
+    header { background: var(--panel); padding: 15px 30px; box-shadow: 0 2px 4px rgba(0,0,0,.06); display: flex; justify-content: space-between; align-items: center; }
+    header .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; color: #1e293b; font-size: 1.2rem; }
+    header .logo img { height: 32px; width: 32px; }
+    .nav-right { display: flex; gap: 20px; align-items: center; font-weight: 600; }
+    .nav-right a { color: #475569; text-decoration: none; }
+    .nav-right a:hover { color: #f97316; }
+
+    .container { max-width: 1200px; margin: 24px auto; padding: 0 16px; display: flex; gap: 20px; }
+    .sidebar { width: 250px; background: var(--panel); border: 1px solid var(--ring); border-radius: 12px; padding: 16px; box-shadow: 0 2px 6px rgba(0,0,0,.06); }
+    .sidebar h2 { font-size: 1.2rem; margin-bottom: 16px; color: var(--text); }
+    .sidebar ul { list-style: none; padding: 0; }
+    .sidebar ul li { margin-bottom: 10px; }
+    .sidebar ul li a { color: #64748b; text-decoration: none; font-weight: 500; }
+    .sidebar ul li a:hover { color: #f97316; }
+    .sidebar ul li.active a { color: #f97316; font-weight: 600; }
+
+    .main-content { flex: 1; background: var(--panel); border: 1px solid var(--ring); border-radius: 12px; padding: 16px; box-shadow: 0 2px 6px rgba(0,0,0,.06); }
+    .main-content h1 { font-size: 1.5rem; margin-bottom: 16px; color: var(--text); }
+    .faq-section { margin-bottom: 20px; }
+    .faq-section h2 { font-size: 1.2rem; margin-bottom: 12px; color: #1e293b; }
+    .faq-item { border-bottom: 1px solid #e2e8f0; padding: 12px 0; }
+    .faq-item:last-child { border-bottom: none; }
+    .faq-item .q { font-weight: 700; margin-bottom: 6px; cursor: pointer; position: relative; }
+    .faq-item .q::after { content: '▼'; position: absolute; right: 0; transition: transform 0.3s; }
+    .faq-item.open .q::after { transform: rotate(180deg); }
+    .faq-item .a { color: #64748b; display: none; margin-top: 6px; }
+    .faq-item.open .a { display: block; }
+
+    .back { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 14px; color: #f97316; text-decoration: none; font-weight: 600; }
+
+    /* Chatbot Styles */
+    .chatbot-container { position: fixed; bottom: 20px; right: 20px; z-index: 1000; }
+    .chatbot-toggle { width: 60px; height: 60px; border-radius: 50%; background: #f97316; color: white; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; font-size: 24px; transition: all 0.3s ease; }
+    .chatbot-toggle:hover { transform: scale(1.1); background: #ea580c; }
+    .chatbot-window { position: absolute; bottom: 80px; right: 0; width: 350px; height: 500px; background: white; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.2); display: none; flex-direction: column; overflow: hidden; }
+    .chatbot-header { background: #f97316; color: white; padding: 16px; display: flex; justify-content: space-between; align-items: center; }
+    .chatbot-header h3 { margin: 0; font-size: 16px; }
+    .chatbot-close { background: none; border: none; color: white; font-size: 20px; cursor: pointer; }
+    .chatbot-messages { flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+    .message { max-width: 80%; padding: 12px; border-radius: 12px; word-wrap: break-word; }
+    .message.user { background: #f97316; color: white; align-self: flex-end; margin-left: auto; }
+    .message.bot { background: #f1f5f9; color: #1e293b; align-self: flex-start; }
+    .chatbot-input { padding: 16px; border-top: 1px solid #e2e8f0; display: flex; gap: 8px; }
+    .chatbot-input input { flex: 1; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; outline: none; }
+    .chatbot-input button { padding: 12px 16px; background: #f97316; color: white; border: none; border-radius: 8px; cursor: pointer; }
+    .chatbot-input button:hover { background: #ea580c; }
+
+    /* Call Button Styles */
+    .call-button { position: fixed; bottom: 20px; left: 20px; z-index: 1000; }
+    .call-btn { width: 60px; height: 60px; border-radius: 50%; background: #10b981; color: white; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; font-size: 24px; transition: all 0.3s ease; }
+    .call-btn:hover { transform: scale(1.1); background: #059669; }
+    .call-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 2000; }
+    .call-modal-content { background: white; padding: 24px; border-radius: 12px; text-align: center; max-width: 400px; width: 90%; }
+    .call-modal h3 { margin: 0 0 16px 0; color: #1e293b; }
+    .call-modal p { color: #64748b; margin-bottom: 20px; }
+    .call-modal-buttons { display: flex; gap: 12px; justify-content: center; }
+    .call-modal button { padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; }
+    .call-confirm { background: #10b981; color: white; }
+    .call-cancel { background: #e2e8f0; color: #64748b; }
+  </style>
+</head>
+<body>
+  <button id="dmBtn" style="position:fixed;top:12px;right:12px;z-index:50;background:#f97316;color:#fff;border:none;border-radius:9999px;width:40px;height:40px;cursor:pointer">🌓</button>
+  <header>
+    <a class="logo" href="swiggyhome.html">
+      <img src="https://cdn-icons-png.flaticon.com/512/2838/2838912.png" alt="logo"/>
+      SWIGGY
+    </a>
+    <nav class="nav-right">
+      <a href="swiggyhome.html">Home</a>
+      <a href="offers.html">Offers</a>
+      <a href="help.html">Help</a>
+      <a href="payment.html">Cart</a>
+      <a href="my acc.html">User</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    
+    <div class="sidebar">
+      <h2>Help & Support</h2>
+      <ul>
+        <li class="active"><a href="#customer-faq">Customer Help</a></li>
+        <li><a href="#partner-onboarding">Partner Onboarding</a></li>
+        <li><a href="#legal">Legal</a></li>
+        <li><a href="#faqs">FAQs</a></li>
+        <li><a href="#instamart-onboarding">Instamart Onboarding</a></li>
+        <li><a href="#irctc-faq">IRCTC FAQ</a></li>
+      </ul>
+    </div>
+
+    <div class="main-content">
+      <h1>Help & Support</h1>
+      <div id="customer-faq" class="faq-section">
+        <h2>Customer Help</h2>
+        <div class="faq-item">
+          <div class="q">How do I place my first order?</div>
+          <div class="a">It's easy! Just search for your favorite restaurant, add items to your cart, and checkout. We'll have your food delivered in 25-30 minutes.</div>
+        </div>
+        <div class="faq-item">
+          <div class="q">How do I track my order?</div>
+          <div class="a">Once you place an order, you can track it in real-time. We'll show you when your food is being prepared, picked up, and delivered.</div>
+        </div>
+        <div class="faq-item">
+          <div class="q">What payment methods do you accept?</div>
+          <div class="a">We accept credit/debit cards, UPI, net banking, and cash on delivery. Choose whatever works best for you!</div>
+        </div>
+        <div class="faq-item">
+          <div class="q">Can I schedule an order for later?</div>
+          <div class="a">Yes! You can schedule your order up to 7 days in advance. Just select "Schedule Order" during checkout and pick your preferred time.</div>
+        </div>
+        <div class="faq-item">
+          <div class="q">How do I customize my food order?</div>
+          <div class="a">Use our quick customization buttons like "No Onion", "Extra Spicy", or "Extra Cheese". You can also add special instructions in the delivery notes.</div>
+        </div>
+        <div class="faq-item">
+          <div class="q">What if my order is delayed?</div>
+          <div class="a">We'll keep you updated if there are any delays. You can always contact our support team or chat with your delivery partner for real-time updates.</div>
+        </div>
+        <div class="faq-item">
+          <div class="q">How do I cancel my order?</div>
+          <div class="a">You can cancel your order before it's prepared. Just go to your order tracking page and click "Cancel Order" if it's still possible.</div>
+        </div>
+        <div class="faq-item">
+          <div class="q">What if I'm not satisfied with my order?</div>
+          <div class="a">We want you to be happy! Contact our support team and we'll work with you to make it right, including refunds if needed.</div>
+        </div>
+      </div>
+      <div id="partner-onboarding" class="faq-section" style="display:none;">
+        <h2>Partner Onboarding</h2>
+        <div class="faq-item">
+          <div class="q">I want to partner my restaurant with Swiggy</div>
+          <div class="a">To partner with Swiggy, visit our <a href="https://www.swiggy.com/partner-with-us">partner onboarding page</a> and fill out the application form with your restaurant details.</div>
+        </div>
+        <div class="faq-item">
+          <div class="q">What are the mandatory documents needed to list my restaurant on Swiggy?</div>
+          <div class="a">You need a valid FSSAI license, PAN card, GST registration, and proof of address. Additional documents may be required based on your location.</div>
+        </div>
+        <div class="faq-item">
+          <div class="q">How do I update my restaurant menu on Swiggy?</div>
+          <div class="a">Log into your partner dashboard and navigate to the menu section to add or update items.</div>
+        </div>
+        <div class="faq-item">
+          <div class="q">What is the commission rate for partnering with Swiggy?</div>
+          <div class="a">Commission rates vary by location and order volume; contact your account manager for details.</div>
+        </div>
+        <div class="faq-item">
+          <div class="q">How can I cancel my partnership with Swiggy?</div>
+          <div class="a">Submit a cancellation request via the partner dashboard or email <a href="mailto:support@swiggy.com">support@swiggy.com</a>.</div>
+        </div>
+      </div>
+      <div id="legal" class="faq-section" style="display:none;">
+        <h2>Legal</h2>
+        <div class="faq-item">
+          <div class="q">I want to opt-out from Google Reserve</div>
+          <div class="a">Contact our support team at <a href="mailto:support@swiggy.com">support@swiggy.com</a> with your restaurant ID and request details.</div>
+        </div>
+        <div class="faq-item">
+          <div class="q">What are the terms and conditions for partnering?</div>
+          <div class="a">Review the full terms on our <a href="https://www.swiggy.com/legal">legal page</a> before signing up.</div>
+        </div>
+        <div class="faq-item">
+          <div class="q">How is my data protected on Swiggy?</div>
+          <div class="a">We use encryption and comply with GDPR and local data protection laws to secure your information.</div>
+        </div>
+        <div class="faq-item">
+          <div class="q">What should I do if I receive a legal notice?</div>
+          <div class="a">Notify our legal team immediately at <a href="mailto:legal@swiggy.com">legal@swiggy.com</a> with all details.</div>
+        </div>
+        <div class="faq-item">
+          <div class="q">Are there any penalties for late deliveries?</div>
+          <div class="a">Penalties may apply; refer to your partnership agreement for specific terms.</div>
+        </div>
+      </div>
+      <div id="faqs" class="faq-section" style="display:none;">
+        <h2>FAQs</h2>
+        <div class="faq-item">
+          <div class="q">After I submit all documents, how long will it take for my restaurant to go live on Swiggy?</div>
+          <div class="a">Processing typically takes 7-10 business days after all documents are verified.</div>
+        </div>
+        <div class="faq-item">
+          <div class="q">What should I do if my order is delayed?</div>
+          <div class="a">Contact customer support at <a href="mailto:support@swiggy.com">support@swiggy.com</a> with your order ID.</div>
+        </div>
+        <div class="faq-item">
+          <div class="q">How can I check my earnings as a partner?</div>
+          <div class="a">Log into the partner dashboard to view your earnings report.</div>
+        </div>
+        <div class="faq-item">
+          <div class="q">What happens if a customer cancels an order?</div>
+          <div class="a">You will be notified, and no commission will be charged for canceled orders.</div>
+        </div>
+        <div class="faq-item">
+          <div class="q">How do I report an issue with the app?</div>
+          <div class="a">Use the 'Report a Problem' option in the app or email <a href="mailto:support@swiggy.com">support@swiggy.com</a>.</div>
+        </div>
+      </div>
+      <div id="instamart-onboarding" class="faq-section" style="display:none;">
+        <h2>Instamart Onboarding</h2>
+        <div class="faq-item">
+          <div class="q">What is this one-time Onboarding fee? Do I have to pay for it while registering?</div>
+          <div class="a">The one-time onboarding fee is optional and covers additional support services. It’s not mandatory during registration.</div>
+        </div>
+        <div class="faq-item">
+          <div class="q">How do I set up my Instamart store?</div>
+          <div class="a">Follow the setup guide in the Instamart partner portal after approval.</div>
+        </div>
+        <div class="faq-item">
+          <div class="q">What are the eligibility criteria for Instamart?</div>
+          <div class="a">You need a valid trade license and a minimum stock inventory; contact support for details.</div>
+        </div>
+        <div class="faq-item">
+          <div class="q">How are Instamart deliveries handled?</div>
+          <div class="a">Swiggy handles deliveries; you only need to prepare and pack the orders.</div>
+        </div>
+        <div class="faq-item">
+          <div class="q">Can I update my Instamart inventory online?</div>
+          <div class="a">Yes, use the partner dashboard to update your inventory in real-time.</div>
+        </div>
+      </div>
+      <div id="irctc-faq" class="faq-section" style="display:none;">
+        <h2>IRCTC FAQ</h2>
+        <div class="faq-item">
+          <div class="q">Who should I contact if I need help or support in getting onboarded?</div>
+          <div class="a">Reach out to our support team at <a href="mailto:support@swiggy.com">support@swiggy.com</a> or call +91 98765 43210.</div>
+        </div>
+        <div class="faq-item">
+          <div class="q">What is the process for IRCTC integration?</div>
+          <div class="a">Submit your IRCTC credentials via the partner dashboard for integration.</div>
+        </div>
+        <div class="faq-item">
+          <div class="q">Are there additional fees for IRCTC services?</div>
+          <div class="a">No additional fees apply; it’s included in the partnership plan.</div>
+        </div>
+        <div class="faq-item">
+          <div class="q">How do I troubleshoot IRCTC order issues?</div>
+          <div class="a">Check the order status in the dashboard or contact support for assistance.</div>
+        </div>
+        <div class="faq-item">
+          <div class="q">What are the benefits of IRCTC integration?</div>
+          <div class="a">It allows seamless order placement for train passengers, increasing your reach.</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- AI Chatbot -->
+  <div class="chatbot-container">
+    <button class="chatbot-toggle" id="chatbotToggle">
+      <i class="fas fa-robot"></i>
+    </button>
+    <div class="chatbot-window" id="chatbotWindow">
+      <div class="chatbot-header">
+        <h3>AI Assistant</h3>
+        <button class="chatbot-close" id="chatbotClose">×</button>
+      </div>
+      <div class="chatbot-messages" id="chatbotMessages">
+        <div class="message bot">
+          Hi! I'm here to help you with your food delivery needs. You can ask me about:
+          <br>• Your order status
+          <br>• Delivery problems
+          <br>• Payment issues
+          <br>• Finding restaurants
+          <br>• Scheduling orders
+          <br>• Customizing your food
+          <br>• Anything else!
+        </div>
+      </div>
+      <div class="chatbot-input">
+        <input type="text" id="chatbotInput" placeholder="Type your message...">
+        <button id="chatbotSend">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Call Delivery Person Button -->
+  <div class="call-button">
+    <button class="call-btn" id="callBtn">
+      <i class="fas fa-phone"></i>
+    </button>
+  </div>
+
+  <!-- Call Modal -->
+  <div class="call-modal" id="callModal">
+    <div class="call-modal-content">
+      <h3>Call Delivery Person</h3>
+      <p>Would you like to call your delivery person for assistance?</p>
+      <div class="call-modal-buttons">
+        <button class="call-confirm" id="callConfirm">Call Now</button>
+        <button class="call-cancel" id="callCancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // dark mode
+    (function(){
+      const saved = localStorage.getItem('theme');
+      if(saved === 'dark') document.documentElement.classList.add('dark');
+      document.getElementById('dmBtn').addEventListener('click', ()=>{
+        document.documentElement.classList.toggle('dark');
+        localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark':'light');
+      });
+    })();
+    (function(){
+      const navUser = document.querySelector('.nav-right a[href="my acc.html"]');
+      const savedName = localStorage.getItem('userName');
+      if (navUser && savedName && savedName.trim()) {
+        navUser.textContent = savedName;
+      }
+
+      // FAQ toggle functionality
+      document.querySelectorAll('.faq-item .q').forEach(item => {
+        item.addEventListener('click', function() {
+          const parent = this.parentElement;
+          parent.classList.toggle('open');
+        });
+      });
+
+      // Sidebar navigation
+      document.querySelectorAll('.sidebar ul li a').forEach(link => {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          const sectionId = this.getAttribute('href').substring(1);
+          document.querySelectorAll('.faq-section').forEach(section => section.style.display = 'none');
+          document.getElementById(sectionId).style.display = 'block';
+          document.querySelectorAll('.sidebar ul li').forEach(li => li.classList.remove('active'));
+          this.parentElement.classList.add('active');
+        });
+      });
+
+      // Load default section
+      document.getElementById('customer-faq').style.display = 'block';
+    })();
+
+    // AI Chatbot functionality
+    (function() {
+      const chatbotToggle = document.getElementById('chatbotToggle');
+      const chatbotWindow = document.getElementById('chatbotWindow');
+      const chatbotClose = document.getElementById('chatbotClose');
+      const chatbotMessages = document.getElementById('chatbotMessages');
+      const chatbotInput = document.getElementById('chatbotInput');
+      const chatbotSend = document.getElementById('chatbotSend');
+
+      // AI responses based on keywords - using simple language
+      const aiResponses = {
+        'order': 'I can help you with your order! Tell me your order number or what\'s going wrong, and I\'ll help you sort it out.',
+        'delivery': 'Having trouble with delivery? I can help you track where your food is or connect you with your delivery person. What\'s happening?',
+        'payment': 'Need help with payment? I can help you with payment issues or getting a refund. What payment method are you using?',
+        'refund': 'Want a refund? No problem! Give me your order details and why you need a refund. We\'ll process it within 3-5 business days.',
+        'cancel': 'Want to cancel your order? You can cancel it before it\'s prepared. Go to your order tracking page and click "Cancel Order" if it\'s still possible.',
+        'track': 'Want to track your order? Go to your order tracking page or give me your order number and I\'ll help you find it.',
+        'restaurant': 'Looking for restaurants? I can help you find great places to eat, check their menus, or tell you about restaurants near you.',
+        'schedule': 'Want to schedule an order? You can book your food up to 7 days in advance! Just select "Schedule Order" during checkout.',
+        'customize': 'Want to customize your food? Use our quick buttons like "No Onion" or "Extra Spicy", or add special instructions in the delivery notes.',
+        'help': 'I\'m here to help! Ask me about orders, deliveries, payments, restaurants, or anything else. What do you need?',
+        'default': 'I\'m here to help! Tell me what\'s going on and I\'ll do my best to help you out. You can ask about orders, deliveries, payments, or anything else.'
+      };
+
+      function getAIResponse(userMessage) {
+        const message = userMessage.toLowerCase();
+        
+        for (const [keyword, response] of Object.entries(aiResponses)) {
+          if (keyword !== 'default' && message.includes(keyword)) {
+            return response;
+          }
+        }
+        return aiResponses.default;
+      }
+
+      function addMessage(content, isUser = false) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${isUser ? 'user' : 'bot'}`;
+        messageDiv.textContent = content;
+        chatbotMessages.appendChild(messageDiv);
+        chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+      }
+
+      function sendMessage() {
+        const message = chatbotInput.value.trim();
+        if (!message) return;
+
+        addMessage(message, true);
+        chatbotInput.value = '';
+
+        // Simulate AI thinking delay
+        setTimeout(() => {
+          const response = getAIResponse(message);
+          addMessage(response);
+        }, 1000);
+      }
+
+      // Event listeners
+      chatbotToggle.addEventListener('click', () => {
+        chatbotWindow.style.display = chatbotWindow.style.display === 'flex' ? 'none' : 'flex';
+      });
+
+      chatbotClose.addEventListener('click', () => {
+        chatbotWindow.style.display = 'none';
+      });
+
+      chatbotSend.addEventListener('click', sendMessage);
+
+      chatbotInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          sendMessage();
+        }
+      });
+
+      // Close chatbot when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('.chatbot-container')) {
+          chatbotWindow.style.display = 'none';
+        }
+      });
+    })();
+
+    // Call functionality
+    (function() {
+      const callBtn = document.getElementById('callBtn');
+      const callModal = document.getElementById('callModal');
+      const callConfirm = document.getElementById('callConfirm');
+      const callCancel = document.getElementById('callCancel');
+
+      callBtn.addEventListener('click', () => {
+        callModal.style.display = 'flex';
+      });
+
+      callConfirm.addEventListener('click', () => {
+        // Simulate calling delivery person
+        alert('Calling delivery person...\n\nIn a real app, this would initiate a call to the delivery person\'s phone number.');
+        callModal.style.display = 'none';
+      });
+
+      callCancel.addEventListener('click', () => {
+        callModal.style.display = 'none';
+      });
+
+      // Close modal when clicking outside
+      callModal.addEventListener('click', (e) => {
+        if (e.target === callModal) {
+          callModal.style.display = 'none';
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,1179 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Swiggy — Restaurants in Kottayam</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .card-img {
+      aspect-ratio: 16/10;
+      object-fit: cover;
+    }
+    .chip { @apply inline-flex items-center px-3 py-2 border rounded-full text-sm; }
+    
+    /* Orange filter chips */
+    .chip.orange-filter {
+      background-color: #fb923c;
+      color: white;
+      border-color: #ea580c;
+    }
+    
+    /* Dark mode styles */
+    .dark-mode {
+      --bg-primary: #1f2937;
+      --bg-secondary: #374151;
+      --text-primary: #f3f4f6;
+      --text-secondary: #e5e7eb;
+      --border-color: #4b5563;
+    }
+    
+    body.dark-mode {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+    }
+    
+    body.dark-mode header {
+      background-color: var(--bg-secondary);
+    }
+    
+    body.dark-mode .border,
+    body.dark-mode .border-t,
+    body.dark-mode .border-gray-200 {
+      border-color: var(--border-color);
+    }
+    
+    body.dark-mode .bg-white {
+      background-color: var(--bg-secondary);
+    }
+    
+    body.dark-mode .bg-gray-50 {
+      background-color: var(--bg-primary);
+    }
+    
+    body.dark-mode .text-gray-800 {
+      color: var(--text-primary);
+    }
+    
+    body.dark-mode .text-gray-600 {
+      color: var(--text-secondary);
+    }
+    
+    body.dark-mode .text-gray-500 {
+      color: var(--text-secondary);
+      opacity: 0.8;
+    }
+    
+    body.dark-mode .hover\:bg-gray-100:hover {
+      background-color: var(--bg-primary);
+    }
+    
+    body.dark-mode input {
+      background-color: var(--bg-secondary);
+      color: var(--text-primary);
+      border-color: var(--border-color);
+    }
+    
+    body.dark-mode .shadow-sm {
+      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+    }
+    
+    /* Voice search animation */
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+    
+    .listening {
+      animation: pulse 1s infinite;
+      color: #ea580c !important;
+    }
+    
+    /* Improved boxes for cities and cuisines */
+    .category-box {
+      transition: all 0.3s ease;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    
+    .category-box:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .category-header {
+      border-top-left-radius: 12px;
+      border-top-right-radius: 12px;
+      background: linear-gradient(135deg, #ea580c, #f97316) !important;
+    }
+    
+    /* Improved search bar */
+    .search-container {
+      position: relative;
+    }
+    
+    .voice-search-btn {
+      position: absolute;
+      right: 85px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: transparent;
+      border: none;
+      color: #6b7280;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 50%;
+      transition: all 0.2s ease;
+    }
+    
+    .voice-search-btn:hover {
+      color: #ea580c;
+      background-color: #f3f4f6;
+    }
+
+    /* Filter Modal Styles */
+    .filter-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+    }
+    
+    .filter-content {
+      background-color: white;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 400px;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+    
+    .dark-mode .filter-content {
+      background-color: var(--bg-secondary);
+      color: var(--text-primary);
+    }
+    
+    .filter-section {
+      border-bottom: 1px solid #e5e7eb;
+      padding: 16px;
+    }
+    
+    .filter-section:last-child {
+      border-bottom: none;
+    }
+    
+    .filter-option {
+      display: flex;
+      align-items: center;
+      padding: 8px 0;
+      cursor: pointer;
+    }
+    
+    .filter-option input {
+      margin-right: 12px;
+    }
+    
+    .active-filter {
+      background-color: #ffedd5;
+      border-color: #ea580c;
+    }
+    
+    .dark-mode .active-filter {
+      background-color: #7c2d12;
+    }
+  </style>
+</head>
+<body class="bg-white text-gray-800">
+  <!-- Dark Mode Toggle Button -->
+  <button id="darkModeToggle" class="fixed top-20 right-5 z-40 bg-orange-500 text-white p-3 rounded-full shadow-lg hover:bg-orange-600 transition">
+    🌙
+  </button>
+
+  <!-- Header -->
+  <header class="sticky top-0 bg-white shadow-sm z-30">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <a href="swiggyhome.html" class="flex items-center gap-2">
+          <div class="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold">S</div>
+          <span class="font-semibold">Swiggy</span>
+        </a>
+        <nav class="hidden md:flex gap-3 text-sm text-gray-600">
+          <a href="swiggyhome.html" class="hover:text-orange-500">Home</a>
+          <a href="offers.html" class="hover:text-orange-500">Offers</a>
+          <a href="help.html" class="hover:text-orange-500">Help</a>
+        </nav>
+      </div>
+      <div class="flex-1 px-4">
+        <div class="max-w-xl mx-auto search-container">
+          <div class="relative">
+            <input type="search" id="searchInput" placeholder="Search for restaurants, dishes or cuisines" class="w-full border rounded-full px-4 py-3 pl-4 pr-24 shadow-sm" />
+            <button id="voiceSearchBtn" class="voice-search-btn">
+              <i class="fas fa-microphone"></i>
+            </button>
+            <button class="absolute right-1 top-1/2 -translate-y-1/2 bg-orange-500 text-white px-3 py-2 rounded-full text-sm">Search</button>
+          </div>
+          <div id="voiceStatus" class="text-xs text-orange-500 mt-1 text-center hidden">
+            <i class="fas fa-circle mr-1"></i> Listening...
+          </div>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <a href="help.html" class="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition text-sm">
+          <i class="fas fa-question-circle"></i>
+          <span class="hidden md:inline">Help</span>
+        </a>
+        <a href="payment.html" class="text-sm hidden md:inline-block">Cart</a>
+        <button id="signInBtn" class="text-sm hidden md:inline-block text-orange-600 hover:text-orange-500">Login</button>
+        <div class="relative">
+          <button id="profileBtn" class="flex items-center gap-2 rounded-md p-2 hover:bg-gray-100">
+            <div class="w-8 h-8 rounded-full bg-gray-200"></div>
+            <span id="userNameLabel" class="hidden md:inline">User</span>
+          </button>
+          <div id="profileMenu" class="hidden absolute right-0 mt-2 w-40 bg-white border rounded shadow-lg">
+            <a class="block px-4 py-2 hover:bg-gray-50" href="my acc.html">Profile</a>
+            <a class="block px-4 py-2 hover:bg-gray-50" href="my acc.html">Orders</a>
+            <a class="block px-4 py-2 hover:bg-gray-50" href="my acc.html">Favourites</a>
+            <button id="logoutBtn" class="w-full text-left block px-4 py-2 hover:bg-gray-50">Logout</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Page intro & filters -->
+  <main class="max-w-7xl mx-auto px-4 py-8">
+    <h1 class="text-2xl font-bold mb-3">Restaurants with online food delivery in Kottayam</h1>
+
+    <div class="flex flex-wrap gap-3 mb-6">
+      <button id="filterBtn" class="chip orange-filter">Filter</button>
+      <button id="sortBtn" class="chip orange-filter">Sort By</button>
+      <button class="chip orange-filter filter-chip" data-filter="fast-delivery">Fast Delivery</button>
+      <button class="chip orange-filter filter-chip" data-filter="new">New on Swiggy</button>
+      <button class="chip orange-filter filter-chip" data-filter="rating">Ratings 4.0+</button>
+      <button class="chip orange-filter filter-chip" data-filter="veg">Pure Veg</button>
+      <button class="chip orange-filter filter-chip" data-filter="offers">Offers</button>
+      <button class="chip orange-filter filter-chip" data-filter="price-mid">Rs. 300 - Rs. 600</button>
+      <button class="chip orange-filter filter-chip" data-filter="price-low">Less than Rs. 300</button>
+    </div>
+
+    <!-- Restaurants grid -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="restaurantsGrid">
+      <article class="border rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition restaurant-card cursor-pointer" data-restaurant-id="kfc" data-rating="4.3" data-delivery-time="25" data-price="400" data-veg="false" data-offers="true" data-new="false"> 
+        <div class="relative">
+          <img src="https://b.zmtcdn.com/data/pictures/chains/9/65279/93776f3249312397e2c2ba274b4812ec.jpg?fit=around|960:500&crop=960:500;*,*" alt="KFC" class="w-full card-img"/>
+          <span class="absolute top-3 left-3 bg-black/60 text-white text-xs px-2 py-1 rounded">50% OFF UPTO ₹80</span>
+        </div>
+        <div class="p-4">
+          <h3 class="font-semibold">KFC</h3>
+          <p class="text-sm text-gray-500">Burgers, Fast Food, Rolls & Wraps — Kanjirappally</p>
+          <div class="mt-3 flex items-center justify-between text-sm">
+            <span>⭐ 4.3</span>
+            <span class="text-gray-500">25-30 mins</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="border rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition restaurant-card cursor-pointer" data-restaurant-id="porch_grill" data-rating="4.6" data-delivery-time="35" data-price="350" data-veg="false" data-offers="true" data-new="true"> 
+        <div class="relative">
+          <img src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Z3JpbGwlMjBmb29kfGVufDB8fDB8fHww&w=1000&q=80" alt="Porch Grill" class="w-full card-img"/>
+          <span class="absolute top-3 left-3 bg-black/60 text-white text-xs px-2 py-1 rounded">₹50 OFF ABOVE ₹249</span>
+        </div>
+        <div class="p-4">
+          <h3 class="font-semibold">Porch Grill</h3>
+          <p class="text-sm text-gray-500">Arabian, Grill, Biryani, Barbecue — Cheppumpara</p>
+          <div class="mt-3 flex items-center justify-between text-sm">
+            <span>⭐ 4.6</span>
+            <span class="text-gray-500">35-40 mins</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="border rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition restaurant-card cursor-pointer" data-restaurant-id="cutiepie_cakes" data-rating="4.6" data-delivery-time="25" data-price="200" data-veg="true" data-offers="true" data-new="false"> 
+        <div class="relative">
+          <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxleHBsb3JlLWZlZWR8NHx8fGVufDB8fHx8fA%3D%3D&w=1000&q=80" alt="Cutiepie Cakes" class="w-full card-img"/>
+          <span class="absolute top-3 left-3 bg-black/60 text-white text-xs px-2 py-1 rounded">₹100 OFF ABOVE ₹199</span>
+        </div>
+        <div class="p-4">
+          <h3 class="font-semibold">Cutiepie Cakes</h3>
+          <p class="text-sm text-gray-500">Ice Cream Cakes, Cafe — Kanjirappally</p>
+          <div class="mt-3 flex items-center justify-between text-sm">
+            <span>⭐ 4.6</span>
+            <span class="text-gray-500">25-30 mins</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="border rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition restaurant-card cursor-pointer" data-restaurant-id="lazza_ice_cream" data-rating="4.7" data-delivery-time="25" data-price="375" data-veg="true" data-offers="true" data-new="true"> 
+        <div class="relative">
+          <img src="https://images.unsplash.com/photo-1563805042-7684c019e1cb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGljZSUyMGNyZWFtfGVufDB8fDB8fHww&w=1000&q=80" alt="Lazza Ice Cream" class="w-full card-img"/>
+          <span class="absolute top-3 left-3 bg-black/60 text-white text-xs px-2 py-1 rounded">ITEMS AT ₹375</span>
+        </div>
+        <div class="p-4">
+          <h3 class="font-semibold">Lazza Ice Cream</h3>
+          <p class="text-sm text-gray-500">Ice Cream, Desserts, Cafe — Kanjirappally</p>
+          <div class="mt-3 flex items-center justify-between text-sm">
+            <span>⭐ 4.7</span>
+            <span class="text-gray-500">25-30 mins</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="border rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition restaurant-card cursor-pointer" data-restaurant-id="apple_bee" data-rating="4.3" data-delivery-time="45" data-price="500" data-veg="false" data-offers="true" data-new="false"> 
+        <div class="relative">
+          <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cmVzdGF1cmFudHxlbnwwfHwwfHx8MA%3D%3D&w=1000&q=80" alt="Apple Bee Restaurant" class="w-full card-img"/>
+          <span class="absolute top-3 left-3 bg-black/60 text-white text-xs px-2 py-1 rounded">20% OFF UPTO ₹50</span>
+        </div>
+        <div class="p-4">
+          <h3 class="font-semibold">Apple Bee Restaurant</h3>
+          <p class="text-sm text-gray-500">Chinese, Tandoor, Arabian — Kottayam Kumily Road</p>
+          <div class="mt-3 flex items-center justify-between text-sm">
+            <span>⭐ 4.3</span>
+            <span class="text-gray-500">45-55 mins</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="border rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition restaurant-card cursor-pointer" data-restaurant-id="kottaram" data-rating="4.3" data-delivery-time="35" data-price="250" data-veg="false" data-offers="true" data-new="false"> 
+        <div class="relative">
+          <img src="https://images.unsplash.com/photo-1552566626-52f8b828add9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8cmVzdGF1cmFudHxlbnwwfHwwfHx8MA%3D%3D&w=1000&q=80" alt="Kottaram Family Restaurant" class="w-full card-img"/>
+          <span class="absolute top-3 left-3 bg-black/60 text-white text-xs px-2 py-1 rounded">ITEMS AT ₹79</span>
+        </div>
+        <div class="p-4">
+          <h3 class="font-semibold">Kottaram Family Restaurant</h3>
+          <p class="text-sm text-gray-500">Kerala, Biryani, Arabian — Kollam Theni Highway</p>
+          <div class="mt-3 flex items-center justify-between text-sm">
+            <span>⭐ 4.3</span>
+            <span class="text-gray-500">35-40 mins</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="border rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition restaurant-card cursor-pointer" data-restaurant-id="cafe_cocoon" data-rating="4.4" data-delivery-time="50" data-price="450" data-veg="false" data-offers="true" data-new="false"> 
+        <div class="relative">
+          <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8cmVzdGF1cmFudHxlbnwwfHwwfHx8MA%3D%3D&w=1000&q=80" alt="Cafe Cocoon" class="w-full card-img"/>
+          <span class="absolute top-3 left-3 bg-black/60 text-white text-xs px-2 py-1 rounded">ITEMS AT ₹149</span>
+        </div>
+        <div class="p-4">
+          <h3 class="font-semibold">Cafe Cocoon</h3>
+          <p class="text-sm text-gray-500">Continental, Arabian, Kebabs — Cheppumpara</p>
+          <div class="mt-3 flex items-center justify-between text-sm">
+            <span>⭐ 4.4</span>
+            <span class="text-gray-500">50-60 mins</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="border rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition restaurant-card cursor-pointer" data-restaurant-id="funfee" data-rating="4.3" data-delivery-time="60" data-price="300" data-veg="true" data-offers="true" data-new="true"> 
+        <div class="relative">
+          <img src="https://images.unsplash.com/photo-1571091718767-18b5b1457add?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGJ1cmdlcnxlbnwwfHwwfHx8MA%3D%3D&w=1000&q=80" alt="Funfee" class="w-full card-img"/>
+          <span class="absolute top-3 left-3 bg-black/60 text-white text-xs px-2 py-1 rounded">FLAT 30% OFF</span>
+        </div>
+        <div class="p-4">
+          <h3 class="font-semibold">Funfee</h3>
+          <p class="text-sm text-gray-500">Burgers, Desserts — Town Center</p>
+          <div class="mt-3 flex items-center justify-between text-sm">
+            <span>⭐ 4.3</span>
+            <span class="text-gray-500">60-70 mins</span>
+          </div>
+        </div>
+      </article>
+      <article class="border rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition restaurant-card cursor-pointer" data-restaurant-id="cafe_fargozi"> 
+        <div class="relative">
+          <img src="Ajfaan Kuzhimanthi.png" alt="Cafe Fargozi" class="w-full card-img"/>
+          <span class="absolute top-3 left-3 bg-black/60 text-white text-xs px-2 py-1 rounded">₹60 OFF ABOVE ₹199</span>
+        </div>
+        <div class="p-4">
+          <h3 class="font-semibold">Cafe Fargozi</h3>
+          <p class="text-sm text-gray-500">Shawarma, Lebanese — Downtown</p>
+          <div class="mt-3 flex items-center justify-between text-sm">
+            <span>⭐ 4.7</span>
+            <span class="text-gray-500">35-40 mins</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="border rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition restaurant-card cursor-pointer" data-restaurant-id="nanuha"> 
+        <div class="relative">
+          <img src="Garlic Naan.webp" alt="Nanuha Restaurant" class="w-full card-img"/>
+          <span class="absolute top-3 left-3 bg-black/60 text-white text-xs px-2 py-1 rounded">BESTSELLER</span>
+        </div>
+        <div class="p-4">
+          <h3 class="font-semibold">Nanuha Restaurant</h3>
+          <p class="text-sm text-gray-500">South Indian, Dosa — City Center</p>
+          <div class="mt-3 flex items-center justify-between text-sm">
+            <span>⭐ 4.5</span>
+            <span class="text-gray-500">40-50 mins</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="border rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition restaurant-card cursor-pointer" data-restaurant-id="tass_bakery"> 
+        <div class="relative">
+          <img src="https://images.localista.com.au/eatingout/131371_lrg.jpg" alt="Tass Bakery" class="w-full card-img"/>
+          <span class="absolute top-3 left-3 bg-black/60 text-white text-xs px-2 py-1 rounded">NEW</span>
+        </div>
+        <div class="p-4">
+          <h3 class="font-semibold">Tass Bakery</h3>
+          <p class="text-sm text-gray-500">Cakes, Bakery — Kanjirapally</p>
+          <div class="mt-3 flex items-center justify-between text-sm">
+            <span>⭐ 4.5</span>
+            <span class="text-gray-500">40-50 mins</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="border rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition restaurant-card cursor-pointer" data-restaurant-id="spice_haven"> 
+        <div class="relative">
+          <img src="https://content3.jdmagicbox.com/v2/comp/goa/p1/0832px832.x832.250408204709.d7p1/catalogue/spice-haven-morjim-goa-goan-restaurants-o6xqxi81fy.jpg" alt="Spice Haven" class="w-full card-img"/>
+          <span class="absolute top-3 left-3 bg-black/60 text-white text-xs px-2 py-1 rounded">₹75 OFF ABOVE ₹299</span>
+        </div>
+        <div class="p-4">
+          <h3 class="font-semibold">Spice Haven</h3>
+          <p class="text-sm text-gray-500">North Indian, Tandoor — City Center</p>
+          <div class="mt-3 flex items-center justify-between text-sm">
+            <span>⭐ 4.4</span>
+            <span class="text-gray-500">30-35 mins</span>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- City links - Improved UI -->
+    <section class="mt-12">
+      <h2 class="text-lg font-semibold mb-4">Best Places to Eat Across Cities</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="category-box bg-white border rounded-xl shadow-sm overflow-hidden">
+          <div class="category-header py-3 px-4 border-b">
+            <h3 class="font-semibold text-white"><i class="fas fa-city mr-2"></i>Metro Cities</h3>
+          </div>
+          <div class="p-4 grid grid-cols-2 gap-2">
+            <button class="chip border-gray-200 text-xs">Bangalore</button>
+            <button class="chip border-gray-200 text-xs">Mumbai</button>
+            <button class="chip border-gray-200 text-xs">Delhi</button>
+            <button class="chip border-gray-200 text-xs">Hyderabad</button>
+          </div>
+        </div>
+        
+        <div class="category-box bg-white border rounded-xl shadow-sm overflow-hidden">
+          <div class="category-header py-3 px-4 border-b">
+            <h3 class="font-semibold text-white"><i class="fas fa-utensils mr-2"></i>Food Capitals</h3>
+          </div>
+          <div class="p-4 grid grid-cols-2 gap-2">
+            <button class="chip border-gray-200 text-xs">Chennai</button>
+            <button class="chip border-gray-200 text-xs">Kolkata</button>
+            <button class="chip border-gray-200 text-xs">Pune</button>
+            <button class="chip border-gray-200 text-xs">Jaipur</button>
+          </div>
+        </div>
+        
+        <div class="category-box bg-white border rounded-xl shadow-sm overflow-hidden">
+          <div class="category-header py-3 px-4 border-b">
+            <h3 class="font-semibold text-white"><i class="fas fa-map-marker-alt mr-2"></i>Other Cities</h3>
+          </div>
+          <div class="p-4 grid grid-cols-2 gap-2">
+            <button class="chip border-gray-200 text-xs">Chandigarh</button>
+            <button class="chip border-gray-200 text-xs">Ahmedabad</button>
+            <button class="chip border-gray-200 text-xs">Nagpur</button>
+            <button class="chip border-gray-200 text-xs">Kochi</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Cuisine links - Improved UI -->
+    <section class="mt-8">
+      <h2 class="text-lg font-semibold mb-4">Best Cuisines Near Me</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="category-box bg-white border rounded-xl shadow-sm overflow-hidden">
+          <div class="category-header py-3 px-4 border-b">
+            <h3 class="font-semibold text-white"><i class="fas fa-flag mr-2"></i>Indian Cuisines</h3>
+          </div>
+          <div class="p-4 grid grid-cols-2 gap-2">
+            <button class="chip border-gray-200 text-xs">North Indian</button>
+            <button class="chip border-gray-200 text-xs">South Indian</button>
+            <button class="chip border-gray-200 text-xs">Punjabi</button>
+            <button class="chip border-gray-200 text-xs">Bengali</button>
+          </div>
+        </div>
+        
+        <div class="category-box bg-white border rounded-xl shadow-sm overflow-hidden">
+          <div class="category-header py-3 px-4 border-b">
+            <h3 class="font-semibold text-white"><i class="fas fa-globe-asia mr-2"></i>Asian Cuisines</h3>
+          </div>
+          <div class="p-4 grid grid-cols-2 gap-2">
+            <button class="chip border-gray-200 text-xs">Chinese</button>
+            <button class="chip border-gray-200 text-xs">Korean</button>
+            <button class="chip border-gray-200 text-xs">Thai</button>
+            <button class="chip border-gray-200 text-xs">Japanese</button>
+          </div>
+        </div>
+        
+        <div class="category-box bg-white border rounded-xl shadow-sm overflow-hidden">
+          <div class="category-header py-3 px-4 border-b">
+            <h3 class="font-semibold text-white"><i class="fas fa-globe-europe mr-2"></i>International</h3>
+          </div>
+          <div class="p-4 grid grid-cols-2 gap-2">
+            <button class="chip border-gray-200 text-xs">Italian</button>
+            <button class="chip border-gray-200 text-xs">Mexican</button>
+            <button class="chip border-gray-200 text-xs">Continental</button>
+            <button class="chip border-gray-200 text-xs">Mediterranean</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Filter Modal -->
+  <div id="filterModal" class="filter-modal hidden">
+    <div class="filter-content">
+      <div class="filter-section">
+        <h3 class="font-semibold text-lg mb-3">Filters</h3>
+        <div class="space-y-2">
+          <div class="filter-option">
+            <input type="checkbox" id="deliveryTime" class="filter-checkbox" data-filter="fast-delivery">
+            <label for="deliveryTime">Fast Delivery</label>
+          </div>
+          <div class="filter-option">
+            <input type="checkbox" id="newRestaurants" class="filter-checkbox" data-filter="new">
+            <label for="newRestaurants">New on Swiggy</label>
+          </div>
+          <div class="filter-option">
+            <input type="checkbox" id="highRating" class="filter-checkbox" data-filter="rating">
+            <label for="highRating">Ratings 4.0+</label>
+          </div>
+          <div class="filter-option">
+            <input type="checkbox" id="pureVeg" class="filter-checkbox" data-filter="veg">
+            <label for="pureVeg">Pure Veg</label>
+          </div>
+          <div class="filter-option">
+            <input type="checkbox" id="offersAvailable" class="filter-checkbox" data-filter="offers">
+            <label for="offersAvailable">Offers</label>
+          </div>
+        </div>
+      </div>
+      
+      <div class="filter-section">
+        <h3 class="font-semibold text-lg mb-3">Price Range</h3>
+        <div class="space-y-2">
+          <div class="filter-option">
+            <input type="radio" id="priceLow" name="price" class="filter-radio" data-filter="price-low">
+            <label for="priceLow">Less than Rs. 300</label>
+          </div>
+          <div class="filter-option">
+            <input type="radio" id="priceMid" name="price" class="filter-radio" data-filter="price-mid">
+            <label for="priceMid">Rs. 300 - Rs. 600</label>
+          </div>
+          <div class="filter-option">
+            <input type="radio" id="priceHigh" name="price" class="filter-radio" data-filter="price-high">
+            <label for="priceHigh">Above Rs. 600</label>
+          </div>
+        </div>
+      </div>
+      
+      <div class="filter-section flex justify-between">
+        <button id="clearFilters" class="px-4 py-2 border rounded-md hover:bg-gray-50">Clear All</button>
+        <button id="applyFilters" class="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700">Apply</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sort Modal -->
+  <div id="sortModal" class="filter-modal hidden">
+    <div class="filter-content">
+      <div class="filter-section">
+        <h3 class="font-semibold text-lg mb-3">Sort By</h3>
+        <div class="space-y-2">
+          <div class="filter-option">
+            <input type="radio" id="relevance" name="sort" class="sort-radio" value="relevance" checked>
+            <label for="relevance">Relevance (Default)</label>
+          </div>
+          <div class="filter-option">
+            <input type="radio" id="deliveryTimeSort" name="sort" class="sort-radio" value="delivery-time">
+            <label for="deliveryTimeSort">Delivery Time</label>
+          </div>
+          <div class="filter-option">
+            <input type="radio" id="ratingSort" name="sort" class="sort-radio" value="rating">
+            <label for="ratingSort">Rating</label>
+          </div>
+          <div class="filter-option">
+            <input type="radio" id="costLow" name="sort" class="sort-radio" value="cost-low">
+            <label for="costLow">Cost: Low to High</label>
+          </div>
+          <div class="filter-option">
+            <input type="radio" id="costHigh" name="sort" class="sort-radio" value="cost-high">
+            <label for="costHigh">Cost: High to Low</label>
+          </div>
+        </div>
+      </div>
+      
+      <div class="filter-section flex justify-end">
+        <button id="applySort" class="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700">Apply</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Attach click handlers to restaurant cards to navigate to individual pages
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('.restaurant-card').forEach(function(card){
+        var id = card.getAttribute('data-restaurant-id');
+        if(!id) return;
+        // build filename like kfc.html or porch_grill.html
+        var filename = id + '.html';
+        card.addEventListener('click', function(){
+          window.location.href = filename;
+        });
+        // also make Enter key activate when focused
+        card.setAttribute('tabindex', '0');
+        card.addEventListener('keydown', function(e){
+          if(e.key === 'Enter') window.location.href = filename;
+        });
+      });
+    });
+  </script>
+
+  <!-- Footer -->
+  <footer class="bg-gray-50 border-t mt-12">
+    <div class="max-w-7xl mx-auto px-4 py-10 grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div>
+        <div class="flex items-center gap-2 mb-3">
+          <div class="w-8 h-8 bg-orange-500 rounded-full text-white flex items-center justify-center">S</div>
+          <span class="font-semibold">Swiggy</span>
+        </div>
+        <p class="text-sm text-gray-600">© 2025 Swiggy Limited</p>
+      </div>
+      <div>
+        <h4 class="font-semibold mb-2">Company</h4>
+        <ul class="text-sm text-gray-600 space-y-1">
+          <li>About Us</li>
+          <li>Swiggy Corporate</li>
+          <li>Careers</li>
+          <li>Team</li>
+          <li>Swiggy One</li>
+          <li>Swiggy Instamart</li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-semibold mb-2">Contact Us</h4>
+        <ul class="text-sm text-gray-600 space-y-1">
+          <li>Help & Support</li>
+          <li>Partner with us</li>
+          <li>Ride with us</li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-semibold mb-2">Available in</h4>
+        <p class="text-sm text-gray-600">Bangalore, Gurgaon, Hyderabad, Delhi, Mumbai, Pune + 67 cities</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scroll to Top Button -->
+  <button id="scrollTopBtn" class="fixed bottom-5 right-5 bg-orange-500 text-white p-3 rounded-full shadow-lg hidden hover:bg-orange-600 transition">
+    ↑
+  </button>
+
+   <!-- Login Modal (Phone + OTP + Registration) -->
+  <div id="loginModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-xl w-11/12 max-w-sm p-6 shadow-lg">
+      <h2 id="loginTitle" class="text-2xl font-bold mb-1">Login</h2>
+      <p class="text-sm text-gray-600 mb-4">or <a id="toggleFormLink" href="#" class="text-orange-600 font-semibold">create an account</a></p>
+
+      <!-- Phone step -->
+      <div id="phoneStep">
+        <label class="block text-sm font-medium mb-1">Phone number</label>
+        <input id="phoneInput" type="tel" inputmode="numeric" pattern="\\d{10}" class="w-full border rounded-md px-3 py-3" placeholder="" />
+        <button id="sendOtpBtn" class="mt-4 w-full bg-orange-600 hover:bg-orange-700 text-white px-4 py-3 rounded-md">LOGIN</button>
+        <p class="mt-3 text-xs text-gray-600">By clicking on Login, I accept the <a href="#" class="underline">Terms & Conditions</a> & <a href="#" class="underline">Privacy Policy</a></p>
+        <button id="loginCancel" class="mt-3 w-full border px-4 py-2 rounded-md hover:bg-gray-50">Cancel</button>
+      </div>
+
+      <!-- OTP step -->
+      <div id="otpStep" class="hidden">
+        <p class="text-sm text-gray-700">We sent a 6-digit code to <span id="maskedPhone" class="font-semibold"></span></p>
+        <label class="block text-sm font-medium mb-1 mt-3">Enter OTP</label>
+        <input id="otpInput" type="text" inputmode="numeric" maxlength="6" class="w-full border rounded-md px-3 py-3 tracking-widest text-center" placeholder="______" />
+        <button id="verifyOtpBtn" class="mt-4 w-full bg-orange-600 hover:bg-orange-700 text-white px-4 py-3 rounded-md">Verify & Continue</button>
+        <button id="changeNumberBtn" class="mt-3 w-full border px-4 py-2 rounded-md hover:bg-gray-50">Use a different number</button>
+      </div>
+
+      <!-- Registration step -->
+      <div id="registerStep" class="hidden">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium mb-1">Full Name</label>
+            <input id="nameInput" type="text" class="w-full border rounded-md px-3 py-3" placeholder="Enter your full name" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">Email Address</label>
+            <input id="emailInput" type="email" class="w-full border rounded-md px-3 py-3" placeholder="Enter your email" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">Phone number</label>
+            <input id="regPhoneInput" type="tel" inputmode="numeric" pattern="\\d{10}" class="w-full border rounded-md px-3 py-3" placeholder="Enter 10-digit phone number" />
+          </div>
+        </div>
+        <button id="createAccountBtn" class="mt-4 w-full bg-orange-600 hover:bg-orange-700 text-white px-4 py-3 rounded-md">CREATE ACCOUNT</button>
+        <p class="mt-3 text-xs text-gray-600">By creating an account, I accept the <a href="#" class="underline">Terms & Conditions</a> & <a href="#" class="underline">Privacy Policy</a></p>
+        <button id="regCancel" class="mt-3 w-full border px-4 py-2 rounded-md hover:bg-gray-50">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Filter functionality
+    const filterBtn = document.getElementById('filterBtn');
+    const sortBtn = document.getElementById('sortBtn');
+    const filterModal = document.getElementById('filterModal');
+    const sortModal = document.getElementById('sortModal');
+    const applyFilters = document.getElementById('applyFilters');
+    const clearFilters = document.getElementById('clearFilters');
+    const applySort = document.getElementById('applySort');
+    const filterChips = document.querySelectorAll('.filter-chip');
+    const restaurantsGrid = document.getElementById('restaurantsGrid');
+    const restaurantCards = document.querySelectorAll('.restaurant-card');
+
+    // Active filters
+    let activeFilters = {
+      'fast-delivery': false,
+      'new': false,
+      'rating': false,
+      'veg': false,
+      'offers': false,
+      'price-low': false,
+      'price-mid': false,
+      'price-high': false
+    };
+
+    let currentSort = 'relevance';
+
+    // Open filter modal
+    filterBtn.addEventListener('click', function() {
+      filterModal.classList.remove('hidden');
+    });
+
+    // Open sort modal
+    sortBtn.addEventListener('click', function() {
+      sortModal.classList.remove('hidden');
+    });
+
+    // Close modals when clicking outside
+    [filterModal, sortModal].forEach(modal => {
+      modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+          modal.classList.add('hidden');
+        }
+      });
+    });
+
+    // Apply filters
+    applyFilters.addEventListener('click', function() {
+      // Update active filters from checkboxes
+      document.querySelectorAll('.filter-checkbox').forEach(checkbox => {
+        const filter = checkbox.getAttribute('data-filter');
+        activeFilters[filter] = checkbox.checked;
+      });
+
+      // Update active filters from radio buttons
+      document.querySelectorAll('.filter-radio:checked').forEach(radio => {
+        const filter = radio.getAttribute('data-filter');
+        // Reset all price filters
+        Object.keys(activeFilters).forEach(key => {
+          if (key.startsWith('price-')) {
+            activeFilters[key] = false;
+          }
+        });
+        activeFilters[filter] = true;
+      });
+
+      // Update chip appearance
+      updateFilterChips();
+      
+      // Apply filters to restaurants
+      applyRestaurantFilters();
+      
+      // Close modal
+      filterModal.classList.add('hidden');
+    });
+
+    // Apply sorting
+    applySort.addEventListener('click', function() {
+      const selectedSort = document.querySelector('input[name="sort"]:checked').value;
+      currentSort = selectedSort;
+      
+      // Apply sorting to restaurants
+      applyRestaurantSorting();
+      
+      // Close modal
+      sortModal.classList.add('hidden');
+    });
+
+    // Clear all filters
+    clearFilters.addEventListener('click', function() {
+      // Reset all checkboxes
+      document.querySelectorAll('.filter-checkbox').forEach(checkbox => {
+        checkbox.checked = false;
+      });
+      
+      // Reset all radio buttons
+      document.querySelectorAll('.filter-radio').forEach(radio => {
+        radio.checked = false;
+      });
+      
+      // Reset active filters
+      Object.keys(activeFilters).forEach(key => {
+        activeFilters[key] = false;
+      });
+      
+      // Update chip appearance
+      updateFilterChips();
+      
+      // Reset restaurant display
+      restaurantCards.forEach(card => {
+        card.style.display = 'block';
+      });
+    });
+
+    // Filter chip click handlers
+    filterChips.forEach(chip => {
+      chip.addEventListener('click', function() {
+        const filter = this.getAttribute('data-filter');
+        
+        // Toggle the filter
+        activeFilters[filter] = !activeFilters[filter];
+        
+        // Update chip appearance
+        updateFilterChips();
+        
+        // Apply filters to restaurants
+        applyRestaurantFilters();
+      });
+    });
+
+    // Update filter chips appearance based on active filters
+    function updateFilterChips() {
+      filterChips.forEach(chip => {
+        const filter = chip.getAttribute('data-filter');
+        if (activeFilters[filter]) {
+          chip.classList.add('active-filter');
+        } else {
+          chip.classList.remove('active-filter');
+        }
+      });
+    }
+
+    // Apply filters to restaurants
+    function applyRestaurantFilters() {
+      restaurantCards.forEach(card => {
+        let shouldShow = true;
+        
+        // Check each active filter
+        if (activeFilters['fast-delivery']) {
+          const deliveryTime = parseInt(card.getAttribute('data-delivery-time'));
+          if (deliveryTime > 30) shouldShow = false;
+        }
+        
+        if (activeFilters['new']) {
+          const isNew = card.getAttribute('data-new') === 'true';
+          if (!isNew) shouldShow = false;
+        }
+        
+        if (activeFilters['rating']) {
+          const rating = parseFloat(card.getAttribute('data-rating'));
+          if (rating < 4.0) shouldShow = false;
+        }
+        
+        if (activeFilters['veg']) {
+          const isVeg = card.getAttribute('data-veg') === 'true';
+          if (!isVeg) shouldShow = false;
+        }
+        
+        if (activeFilters['offers']) {
+          const hasOffers = card.getAttribute('data-offers') === 'true';
+          if (!hasOffers) shouldShow = false;
+        }
+        
+        if (activeFilters['price-low']) {
+          const price = parseInt(card.getAttribute('data-price'));
+          if (price >= 300) shouldShow = false;
+        }
+        
+        if (activeFilters['price-mid']) {
+          const price = parseInt(card.getAttribute('data-price'));
+          if (price < 300 || price > 600) shouldShow = false;
+        }
+        
+        if (activeFilters['price-high']) {
+          const price = parseInt(card.getAttribute('data-price'));
+          if (price <= 600) shouldShow = false;
+        }
+        
+        // Show or hide the card based on filters
+        card.style.display = shouldShow ? 'block' : 'none';
+      });
+      
+      // Apply sorting after filtering
+      applyRestaurantSorting();
+    }
+
+    // Apply sorting to restaurants
+    function applyRestaurantSorting() {
+      const visibleCards = Array.from(restaurantCards).filter(card => 
+        card.style.display !== 'none'
+      );
+      
+      // Sort based on current sort option
+      visibleCards.sort((a, b) => {
+        switch(currentSort) {
+          case 'delivery-time':
+            return parseInt(a.getAttribute('data-delivery-time')) - parseInt(b.getAttribute('data-delivery-time'));
+          case 'rating':
+            return parseFloat(b.getAttribute('data-rating')) - parseFloat(a.getAttribute('data-rating'));
+          case 'cost-low':
+            return parseInt(a.getAttribute('data-price')) - parseInt(b.getAttribute('data-price'));
+          case 'cost-high':
+            return parseInt(b.getAttribute('data-price')) - parseInt(a.getAttribute('data-price'));
+          default: // relevance
+            return 0;
+        }
+      });
+      
+      // Reorder the grid
+      visibleCards.forEach(card => {
+        restaurantsGrid.appendChild(card);
+      });
+    }
+
+    // Dark mode toggle functionality
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    
+    // Check for saved theme preference or use system preference
+    const currentTheme = localStorage.getItem('theme') || 
+                        (prefersDarkScheme.matches ? 'dark' : 'light');
+    
+    // Apply the theme
+    if (currentTheme === 'dark') {
+      document.body.classList.add('dark-mode');
+      darkModeToggle.textContent = '☀️';
+    }
+    
+    // Toggle theme on button click
+    darkModeToggle.addEventListener('click', function() {
+      let theme = 'light';
+      if (!document.body.classList.contains('dark-mode')) {
+        document.body.classList.add('dark-mode');
+        darkModeToggle.textContent = '☀️';
+        theme = 'dark';
+      } else {
+        document.body.classList.remove('dark-mode');
+        darkModeToggle.textContent = '🌙';
+        theme = 'light';
+      }
+      localStorage.setItem('theme', theme);
+    });
+    
+    // Voice search functionality
+    const voiceSearchBtn = document.getElementById('voiceSearchBtn');
+    const voiceStatus = document.getElementById('voiceStatus');
+    const searchInput = document.getElementById('searchInput');
+    
+    // Check if browser supports speech recognition
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let recognition = null;
+    
+    if (SpeechRecognition) {
+      recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.lang = 'en-US';
+      
+      recognition.onstart = function() {
+        voiceSearchBtn.classList.add('listening');
+        voiceStatus.classList.remove('hidden');
+      };
+      
+      recognition.onresult = function(event) {
+        const transcript = event.results[0][0].transcript;
+        searchInput.value = transcript;
+      };
+      
+      recognition.onerror = function(event) {
+        console.error('Speech recognition error', event.error);
+        voiceStatus.classList.add('hidden');
+        voiceSearchBtn.classList.remove('listening');
+      };
+      
+      recognition.onend = function() {
+        voiceStatus.classList.add('hidden');
+        voiceSearchBtn.classList.remove('listening');
+      };
+      
+      voiceSearchBtn.addEventListener('click', function() {
+        if (voiceSearchBtn.classList.contains('listening')) {
+          recognition.stop();
+        } else {
+          try {
+            recognition.start();
+          } catch (err) {
+            console.error('Speech recognition start failed', err);
+            voiceStatus.textContent = 'Microphone not available';
+            voiceStatus.classList.remove('hidden');
+            setTimeout(() => {
+              voiceStatus.classList.add('hidden');
+            }, 3000);
+          }
+        }
+      });
+    } else {
+      // Browser doesn't support speech recognition
+      voiceSearchBtn.addEventListener('click', function() {
+        voiceStatus.textContent = 'Voice search not supported in your browser';
+        voiceStatus.classList.remove('hidden');
+        setTimeout(() => {
+          voiceStatus.classList.add('hidden');
+        }, 3000);
+      });
+    }
+    
+    // Profile menu toggle
+    document.getElementById('profileBtn').addEventListener('click', function(e){
+      e.stopPropagation();
+      document.getElementById('profileMenu').classList.toggle('hidden');
+    });
+    document.addEventListener('click', function(){
+      document.getElementById('profileMenu').classList.add('hidden');
+    });
+
+    // Scroll-to-top button
+    const scrollBtn = document.getElementById('scrollTopBtn');
+
+    window.onscroll = function() {
+      if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {
+        scrollBtn.classList.remove('hidden');
+      } else {
+        scrollBtn.classList.add('hidden');
+      }
+    };
+
+    scrollBtn.addEventListener('click', function() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // Simple auth state using localStorage
+    const userNameLabel = document.getElementById('userNameLabel');
+    const signInBtn = document.getElementById('signInBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const loginModal = document.getElementById('loginModal');
+    const loginCancel = document.getElementById('loginCancel');
+    const phoneStep = document.getElementById('phoneStep');
+    const otpStep = document.getElementById('otpStep');
+    const phoneInput = document.getElementById('phoneInput');
+    const sendOtpBtn = document.getElementById('sendOtpBtn');
+    const otpInput = document.getElementById('otpInput');
+    const verifyOtpBtn = document.getElementById('verifyOtpBtn');
+    const changeNumberBtn = document.getElementById('changeNumberBtn');
+    const maskedPhone = document.getElementById('maskedPhone');
+
+    function applyUserUI() {
+      const savedName = localStorage.getItem('userName');
+      if (savedName && savedName.trim()) {
+        userNameLabel.textContent = savedName;
+        if (signInBtn) signInBtn.classList.add('hidden');
+      } else {
+        userNameLabel.textContent = 'User';
+        if (signInBtn) signInBtn.classList.remove('hidden');
+      }
+    }
+
+    applyUserUI();
+
+    function openLogin() { loginModal.classList.remove('hidden'); loginModal.classList.add('flex'); }
+    function closeLogin() { loginModal.classList.add('hidden'); loginModal.classList.remove('flex'); }
+
+    if (signInBtn) signInBtn.addEventListener('click', function(){
+      // reset
+      phoneInput.value = '';
+      otpInput.value = '';
+      phoneStep.classList.remove('hidden');
+      otpStep.classList.add('hidden');
+      openLogin();
+    });
+    loginCancel.addEventListener('click', closeLogin);
+
+    // Fake OTP flow
+    let generatedOtp = '';
+    let currentPhone = '';
+
+    sendOtpBtn.addEventListener('click', function(){
+      const phone = (phoneInput.value || '').trim();
+      if (!/^\d{10}$/.test(phone)) { alert('Please enter a valid 10-digit phone number'); return; }
+      currentPhone = phone;
+      generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+      // In real app, send this to server/SMS provider. For demo, show it in console.
+      console.log('Demo OTP:', generatedOtp);
+      maskedPhone.textContent = phone.replace(/^(\d{2})(\d{6})(\d{2})$/, '$1******$3');
+      phoneStep.classList.add('hidden');
+      otpStep.classList.remove('hidden');
+      otpInput.focus();
+    });
+
+    changeNumberBtn.addEventListener('click', function(){
+      otpStep.classList.add('hidden');
+      phoneStep.classList.remove('hidden');
+      phoneInput.focus();
+    });
+
+    verifyOtpBtn.addEventListener('click', function(){
+      // Accept any OTP and log in as the demo user name
+      const displayName = 'juna elsa mathew';
+      localStorage.setItem('userName', displayName);
+      localStorage.setItem('userPhone', currentPhone);
+      closeLogin();
+      applyUserUI();
+    });
+
+    logoutBtn.addEventListener('click', function(){
+      localStorage.removeItem('userName');
+      localStorage.removeItem('userEmail');
+      applyUserUI();
+      document.getElementById('profileMenu').classList.add('hidden');
+    });
+
+    // Ensure any missing/broken restaurant images show a reliable fallback
+    (function attachImageFallbacks(){
+      const fallbackSrc = 'kfc.png'; // local, guaranteed to load
+      const images = document.querySelectorAll('.card-img');
+      images.forEach(function(image){
+        image.addEventListener('error', function(){
+          if (image.getAttribute('src') !== fallbackSrc) {
+            image.setAttribute('src', fallbackSrc);
+          }
+        }, { once: false });
+      });
+    })();
+
+    // Navigate to restaurant details on card click
+    (function attachRestaurantClicks(){
+      const cards = document.querySelectorAll('.restaurant-card');
+      cards.forEach(function(card){
+        card.addEventListener('click', function(){
+          const id = card.getAttribute('data-restaurant-id');
+          const name = card.querySelector('h3')?.textContent || '';
+          const image = card.querySelector('img')?.getAttribute('src') || '';
+          localStorage.setItem('selectedRestaurant', JSON.stringify({ id, name, image }));
+          window.location.href = 'restaurant-details.html';
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

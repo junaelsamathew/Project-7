@@ -1,0 +1,2042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Secure Checkout</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root { --bg:#f8fafc; --text:#1a202c; --panel:#ffffff; --ring:#e2e8f0 }
+    .dark :root, .dark { --bg:#0f172a; --text:#e5e7eb; --panel:#0b1220; --ring:#1f2937 }
+    body { background: var(--bg); color: var(--text); }
+    /* Reset and base styles */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f8fafc;
+      margin: 0;
+      padding: 0;
+      color: #1a202c;
+      line-height: 1.6;
+    }
+    
+    a {
+      text-decoration: none;
+      color: #f97316;
+    }
+    
+    .container {
+      max-width: 1100px;
+      margin: 30px auto;
+      background-color: var(--panel);
+      padding: 20px 30px;
+      border-radius: 12px;
+      display: flex;
+      gap: 30px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+    
+    /* Left - Checkout steps */
+    .checkout-left {
+      flex: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+    }
+    
+    .step {
+      background: var(--panel);
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      position: relative;
+      border-left: 6px solid transparent;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .step-icon {
+      position: absolute;
+      left: -30px;
+      top: 25px;
+      background-color: #1a202c;
+      color: white;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 14px;
+      font-weight: bold;
+    }
+    
+    .step.completed .step-icon {
+      background-color: #10b981;
+    }
+    
+    .step h3 {
+      margin: 0 0 12px 0;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 1.25rem;
+      color: #1e293b;
+    }
+    
+    .step h3 .change {
+      color: #f97316;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+    
+    .step p {
+      margin: 0 0 8px 0;
+      font-weight: 400;
+      font-size: 0.95rem;
+      color: #4a5568;
+    }
+    
+    .step span.time {
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-top: 8px;
+      color: #10b981;
+      background: #ecfdf5;
+      padding: 6px 12px;
+      border-radius: 20px;
+      display: inline-block;
+      width: fit-content;
+    }
+    
+    /* Scheduled Delivery Styles */
+    .scheduled-delivery {
+      display: none;
+      margin-top: 20px;
+      padding: 20px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      background-color: #f8fafc;
+    }
+    
+    .scheduled-delivery.active {
+      display: block;
+    }
+    
+    .delivery-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    
+    .date-input-container, .time-input-container {
+      position: relative;
+      margin-top: 15px;
+      display: none;
+    }
+    
+    .date-input, .time-input {
+      width: 100%;
+      padding: 12px 15px 12px 12px;
+      border: 1px solid #cbd5e0;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+    }
+    
+    .date-input:focus, .time-input:focus {
+      outline: none;
+      border-color: #10b981;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+    }
+    
+    .calendar-icon, .clock-icon {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #64748b;
+      cursor: pointer;
+    }
+    
+    .delivery-note {
+      margin-top: 15px;
+      padding: 10px;
+      background-color: #ecfdf5;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      color: #065f46;
+    }
+
+    /* Payment button */
+    .payment-button {
+      background-color: #10b981;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      text-align: center;
+      font-weight: 700;
+      font-size: 1.1rem;
+      padding: 18px 0;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin-top: 25px;
+      box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3);
+      width: 100%;
+    }
+    
+    .payment-button:hover {
+      background-color: #059669;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 8px rgba(16, 185, 129, 0.4);
+    }
+    
+    /* Right - Order Summary */
+    .checkout-right {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+    }
+    
+    .order-summary, .rules {
+      background: var(--panel);
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      font-size: 0.95rem;
+      color: #1a202c;
+    }
+    
+    /* Food item */
+    .food-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 15px;
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .food-item img {
+      width: 80px;
+      height: 80px;
+      border-radius: 12px;
+      object-fit: cover;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+      margin-right: 10px;
+      background: #f1f5f9;
+    }
+    
+    .food-details {
+      flex-grow: 1;
+    }
+    
+    .food-title {
+      font-weight: 700;
+      margin: 0 0 5px 0;
+      font-size: 1.1rem;
+      color: #1e293b;
+    }
+    
+    .food-location {
+      color: #64748b;
+      font-size: 0.9rem;
+      margin-bottom: 10px;
+    }
+    
+    .choice-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.95rem;
+      color: #10b981;
+      margin-bottom: 12px;
+    }
+    
+    .quantity-picker {
+      border: 1px solid #cbd5e0;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      user-select: none;
+      overflow: hidden;
+    }
+    
+    .quantity-picker button {
+      border: none;
+      background: #f8fafc;
+      font-weight: 600;
+      font-size: 1.1rem;
+      width: 30px;
+      height: 30px;
+      cursor: pointer;
+      color: #10b981;
+      outline: none;
+      transition: background-color 0.2s;
+    }
+    
+    .quantity-picker button:hover {
+      background: #e2e8f0;
+    }
+    
+    .quantity-picker span {
+      padding: 0 12px;
+      font-weight: 600;
+    }
+    
+    .price {
+      margin-left: auto;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: #1a202c;
+    }
+    
+    /* Suggestions box */
+    .suggestions-box {
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      padding: 12px 15px;
+      font-size: 0.9rem;
+      color: #64748b;
+      font-style: italic;
+      background: #f8fafc;
+    }
+    
+    .checkbox-container {
+      border: 1px solid var(--ring);
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+      font-size: 0.9rem;
+      color: #1a202c;
+      background: #f8fafc;
+    }
+    
+    .checkbox-container label {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      cursor: pointer;
+    }
+    
+    .checkbox-container input[type="checkbox"] {
+      transform: scale(1.3);
+      margin-top: 3px;
+      cursor: pointer;
+    }
+    
+    .checkbox-label-main {
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 5px;
+    }
+    
+    .apply-coupon {
+      border: 2px dashed var(--ring);
+      padding: 15px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      text-align: center;
+      user-select: none;
+      color: #475569;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+    
+    .apply-coupon:hover {
+      background: #f1f5f9;
+      border-color: #94a3b8;
+    }
+    
+    .bill-details {
+      font-size: 0.95rem;
+      margin-bottom: 20px;
+    }
+    
+    .bill-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      color: #475569;
+      padding: 5px 0;
+    }
+    
+    .bill-row.total {
+      font-weight: 800;
+      font-size: 1.2rem;
+      color: #1e293b;
+      border-top: 2px solid #e2e8f0;
+      padding-top: 15px;
+      margin-top: 10px;
+    }
+    
+    .rules {
+      font-size: 0.9rem;
+      color: #475569;
+    }
+    
+    .rules b {
+      font-weight: 700;
+      color: #1e293b;
+    }
+    
+    .rules a {
+      color: #f97316;
+      font-weight: 600;
+    }
+    
+    header {
+      background: var(--panel);
+      padding: 15px 30px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+    
+    header .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      color: #1e293b;
+      font-size: 1.3rem;
+      user-select: none;
+    }
+    
+    header .logo img {
+      height: 36px;
+      width: 36px;
+    }
+    
+    header .nav-right {
+      display: flex;
+      gap: 25px;
+      align-items: center;
+      font-weight: 500;
+    }
+    
+    header .nav-right a {
+      cursor: pointer;
+      color: #475569;
+      transition: color 0.2s;
+    }
+    
+    header .nav-right a:hover {
+      color: #f97316;
+    }
+    
+    .help-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      background: #f97316;
+      color: white;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    
+    .help-btn:hover {
+      background: #ea580c;
+      color: white;
+      transform: translateY(-1px);
+    }
+    
+    .divider {
+      height: 1px;
+      background: #e2e8f0;
+      margin: 20px 0;
+    }
+    
+    .section-heading {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 15px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #f1f5f9;
+    }
+    
+    .payment-methods {
+      margin-top: 20px;
+    }
+    
+    .payment-method {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 15px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .payment-method:hover {
+      background-color: #f8fafc;
+      border-color: #cbd5e0;
+    }
+    
+    .payment-method input[type="radio"] {
+      transform: scale(1.2);
+      cursor: pointer;
+    }
+    
+    .payment-method label {
+      cursor: pointer;
+      font-weight: 500;
+      flex-grow: 1;
+    }
+    
+    .payment-method img {
+      height: 24px;
+    }
+
+    .address-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+    }
+    
+    .address-modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    
+    .address-form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    
+    .form-group label {
+      font-weight: 600;
+      color: #1e293b;
+      font-size: 0.9rem;
+    }
+    
+    .form-group input, .form-group textarea {
+      padding: 12px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+    }
+    
+    .form-group input:focus, .form-group textarea:focus {
+      outline: none;
+      border-color: #f97316;
+      box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+    
+    .address-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 20px;
+    }
+    
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .btn-primary {
+      background: #f97316;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: #ea580c;
+    }
+    
+    .btn-secondary {
+      background: #e2e8f0;
+      color: #64748b;
+    }
+    
+    .btn-secondary:hover {
+      background: #cbd5e0;
+    }
+
+    .coupon-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+    }
+    
+    .coupon-modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      max-width: 400px;
+      width: 90%;
+    }
+    
+    .coupon-input-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    
+    .coupon-input-group input {
+      flex: 1;
+      padding: 12px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+    
+    .coupon-input-group button {
+      padding: 12px 20px;
+      background: #f97316;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    
+    .coupon-list {
+      max-height: 200px;
+      overflow-y: auto;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+    }
+    
+    .coupon-item {
+      padding: 15px;
+      border-bottom: 1px solid #f1f5f9;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    
+    .coupon-item:hover {
+      background: #f8fafc;
+    }
+    
+    .coupon-item:last-child {
+      border-bottom: none;
+    }
+    
+    .coupon-code {
+      font-weight: 600;
+      color: #1e293b;
+    }
+    
+    .coupon-desc {
+      font-size: 0.9rem;
+      color: #64748b;
+      margin-top: 5px;
+    }
+
+    .confirmation-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+    }
+    
+    .confirmation-content {
+      background: white;
+      padding: 40px;
+      border-radius: 12px;
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+    }
+    
+    .success-icon {
+      width: 80px;
+      height: 80px;
+      background: #10b981;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      font-size: 40px;
+      color: white;
+    }
+    
+    .confirmation-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 10px;
+    }
+    
+    .confirmation-message {
+      color: #64748b;
+      margin-bottom: 30px;
+    }
+
+    .schedule-section {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .schedule-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 15px;
+    }
+    
+    .schedule-toggle label {
+      font-weight: 600;
+      color: #1e293b;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .schedule-toggle input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: #f97316;
+    }
+    
+    .schedule-options {
+      display: none;
+      margin-top: 15px;
+      padding: 15px;
+      background: #f8fafc;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+    }
+    
+    .schedule-options.active {
+      display: block;
+    }
+    
+    .schedule-row {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+    
+    .schedule-group {
+      flex: 1;
+    }
+    
+    .schedule-group label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #374151;
+      margin-bottom: 5px;
+    }
+    
+    .schedule-group input,
+    .schedule-group select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+    
+    .schedule-group input:focus,
+    .schedule-group select:focus {
+      outline: none;
+      border-color: #f97316;
+      box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+    }
+    
+    .schedule-info {
+      background: #dbeafe;
+      border: 1px solid #93c5fd;
+      color: #1e40af;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      margin-top: 10px;
+    }
+
+    .order-features {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .order-features h3 {
+      color: #1e293b;
+      margin-bottom: 15px;
+      font-size: 1.1rem;
+    }
+    
+    .feature-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    
+    .feature-item:last-child {
+      border-bottom: none;
+    }
+    
+    .feature-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .feature-icon {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #64748b;
+    }
+    
+    .feature-details h4 {
+      font-size: 0.9rem;
+      color: #1e293b;
+      margin: 0;
+    }
+    
+    .feature-details p {
+      font-size: 0.8rem;
+      color: #64748b;
+      margin: 2px 0 0 0;
+    }
+    
+    .feature-toggle {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      background: #e2e8f0;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    
+    .feature-toggle.active {
+      background: #f97316;
+    }
+    
+    .feature-toggle::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 20px;
+      height: 20px;
+      background: white;
+      border-radius: 50%;
+      transition: transform 0.3s;
+    }
+    
+    .feature-toggle.active::after {
+      transform: translateX(20px);
+    }
+    
+    .feature-price {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #1e293b;
+    }
+
+    .gift-card-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+    }
+    
+    .gift-card-modal-content {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      max-width: 450px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    
+    .gift-card-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 15px;
+      margin: 20px 0;
+    }
+    
+    .gift-card-option {
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 15px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .gift-card-option:hover {
+      border-color: #f97316;
+      background: #fff7ed;
+    }
+    
+    .gift-card-option.selected {
+      border-color: #f97316;
+      background: #fff7ed;
+    }
+    
+    .gift-card-option h4 {
+      margin: 0 0 5px 0;
+      color: #1e293b;
+      font-size: 1rem;
+    }
+    
+    .gift-card-option p {
+      margin: 0;
+      color: #64748b;
+      font-size: 0.8rem;
+    }
+
+    .split-bill-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+    }
+    
+    .split-bill-modal-content {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      max-width: 400px;
+      width: 90%;
+    }
+    
+    .split-options {
+      margin: 20px 0;
+    }
+    
+    .split-option {
+      display: flex;
+      align-items: center;
+      padding: 12px;
+      margin: 8px 0;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .split-option:hover {
+      border-color: #f97316;
+      background: #fff7ed;
+    }
+    
+    .split-option.selected {
+      border-color: #f97316;
+      background: #fff7ed;
+    }
+    
+    .split-option input[type="radio"] {
+      margin-right: 12px;
+      accent-color: #f97316;
+    }
+    
+    .split-option label {
+      flex: 1;
+      font-size: 0.9rem;
+      color: #1e293b;
+      cursor: pointer;
+    }
+
+    .refund-policy {
+      background: #f0f9ff;
+      border: 1px solid #0ea5e9;
+      color: #0c4a6e;
+      padding: 12px;
+      border-radius: 8px;
+      margin: 15px 0;
+      font-size: 0.9rem;
+    }
+    
+    .refund-policy i {
+      margin-right: 8px;
+      color: #0ea5e9;
+    }
+
+    .applied-coupon {
+      background: #ecfdf5;
+      border: 1px solid #10b981;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 15px;
+      display: none;
+    }
+    
+    .applied-coupon.show {
+      display: block;
+    }
+    
+    .coupon-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .coupon-name {
+      font-weight: 600;
+      color: #065f46;
+    }
+    
+    .coupon-discount {
+      color: #10b981;
+      font-weight: 600;
+    }
+    
+    .remove-coupon {
+      background: none;
+      border: none;
+      color: #ef4444;
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+  </style>
+</head>
+<body>
+  <button id="dmBtn" style="position:fixed;top:12px;right:12px;z-index:50;background:#f97316;color:#fff;border:none;border-radius:9999px;width:40px;height:40px;cursor:pointer">🌓</button>
+  <header>
+    <div class="logo">
+      <img src="https://cdn-icons-png.flaticon.com/512/2838/2838912.png" alt="logo"/>
+      <a href="swiggyhome.html" style="color:#1e293b; text-decoration:none;">SECURE CHECKOUT</a>
+    </div>
+    <nav class="nav-right">
+      <a href="help.html" class="help-btn">
+        <i class="fas fa-question-circle"></i>
+        Help
+      </a>
+      <a href="my acc.html">User</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="checkout-left">
+      <div class="step completed">
+        <div class="step-icon">1</div>
+        <h3>
+          Delivery address
+          <span class="change" id="changeAddress">CHANGE</span>
+        </h3>
+        <div id="addressDisplay">
+          <p><b id="addressName">College</b></p>
+          <p id="addressDetails">amal jyothi college of engineering koovappally,kerala, P.O Kanjirapally – Erumely Road, Koovappally, Kerala 686518, India</p>
+          <p id="addressContact" style="color: #64748b; font-size: 0.9rem;">Phone: +91 98765 43210</p>
+        </div>
+        <span class="time" id="deliveryTimeDisplay">43 MINS</span>
+      </div>
+
+      <div class="order-features">
+        <h3>Order Features</h3>
+        <div class="feature-item">
+          <div class="feature-info">
+            <div class="feature-icon">
+              <i class="fas fa-leaf"></i>
+            </div>
+            <div class="feature-details">
+              <h4>Eco-friendly Packing</h4>
+              <p>Biodegradable packaging materials</p>
+            </div>
+          </div>
+          <div class="feature-toggle" id="ecoPackingToggle"></div>
+          <div class="feature-price">+₹5</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-info">
+            <div class="feature-icon">
+              <i class="fas fa-gift"></i>
+            </div>
+            <div class="feature-details">
+              <h4>Personalized Gift Card</h4>
+              <p>Add a custom message</p>
+            </div>
+          </div>
+          <div class="feature-toggle" id="giftCardToggle"></div>
+          <div class="feature-price">+₹25</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-info">
+            <div class="feature-icon">
+              <i class="fas fa-users"></i>
+            </div>
+            <div class="feature-details">
+              <h4>Split Bill</h4>
+              <p>Share the cost with friends</p>
+            </div>
+          </div>
+          <div class="feature-toggle" id="splitBillToggle"></div>
+          <div class="feature-price">Free</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-icon">2</div>
+        <h3>More Options</h3>
+        <div class="scheduled-delivery active">
+          <div class="delivery-option">
+            <input type="radio" id="now" name="delivery-time" checked>
+            <label for="now">Deliver Now</label>
+          </div>
+          <div class="delivery-option">
+            <input type="radio" id="schedule" name="delivery-time">
+            <label for="schedule">Schedule for later</label>
+          </div>
+          <div class="date-input-container">
+            <input type="date" class="date-input" id="delivery-date">
+            <i class="fas fa-calendar-alt calendar-icon" id="calendar-toggle"></i>
+          </div>
+          <div class="time-input-container">
+            <input type="time" class="time-input" id="delivery-time">
+            <i class="fas fa-clock clock-icon"></i>
+          </div>
+          <div class="delivery-note">
+            <i class="fas fa-info-circle"></i> Scheduled orders cannot be cancelled once placed. Additional charges may apply for deliveries outside regular hours.
+          </div>
+        </div>
+        
+        <div class="divider"></div>
+        
+        <h3>Choose payment method</h3>
+        <div class="payment-methods">
+          <div class="payment-method">
+            <input type="radio" id="card" name="payment" checked>
+            <label for="card">Credit/Debit Card</label>
+            <img src="https://cdn-icons-png.flaticon.com/512/179/179431.png" alt="card">
+          </div>
+          <div class="payment-method">
+            <input type="radio" id="upi" name="payment">
+            <label for="upi">UPI</label>
+            <img src="https://cdn-icons-png.flaticon.com/512/888/888871.png" alt="upi">
+          </div>
+          <div class="payment-method">
+            <input type="radio" id="netbanking" name="payment">
+            <label for="netbanking">Net Banking</label>
+            <img src="https://cdn-icons-png.flaticon.com/512/1001/1001280.png" alt="net banking">
+          </div>
+          <div class="payment-method">
+            <input type="radio" id="cod" name="payment">
+            <label for="cod">Cash on Delivery</label>
+            <img src="https://cdn-icons-png.flaticon.com/512/2331/2331966.png" alt="cash">
+          </div>
+        </div>
+        <button class="payment-button">PROCEED TO PAY</button>
+      </div>
+    </section>
+
+    <aside class="checkout-right">
+      <div class="order-summary">
+        <div class="section-heading">Order Summary</div>
+        <div class="applied-coupon" id="appliedCoupon">
+          <div class="coupon-info">
+            <div>
+              <div class="coupon-name" id="appliedCouponName">SWIGGY50</div>
+              <div class="coupon-desc" id="appliedCouponDesc">50% OFF up to ₹100</div>
+            </div>
+            <div>
+              <span class="coupon-discount" id="appliedCouponDiscount">-₹50</span>
+              <button class="remove-coupon" id="removeCoupon">×</button>
+            </div>
+          </div>
+        </div>
+        <div class="apply-coupon" role="button" tabindex="0" id="applyCouponBtn">
+          ⚙ Apply Coupon
+        </div>
+        <div class="bill-details"></div>
+      </div>
+      <div class="refund-policy">
+        <i class="fas fa-shield-alt"></i>
+        <strong>Refund Policy:</strong> Orders can be cancelled and refunded within 2 days of delivery. Scheduled orders can be cancelled up to 2 hours before delivery time.
+        <a href="#" style="color: #0ea5e9; text-decoration: underline; margin-left: 5px;">Read full policy</a>
+      </div>
+    </aside>
+  </main>
+
+  <div class="address-modal" id="addressModal">
+    <div class="address-modal-content">
+      <h2 style="margin-bottom: 20px; color: #1e293b;">Change Delivery Address</h2>
+      <form class="address-form" id="addressForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="fullName">Full Name *</label>
+            <input type="text" id="fullName" name="fullName" required>
+          </div>
+          <div class="form-group">
+            <label for="phone">Phone Number *</label>
+            <input type="tel" id="phone" name="phone" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" name="email">
+        </div>
+        <div class="form-group">
+          <label for="streetAddress">Street Address *</label>
+          <textarea id="streetAddress" name="streetAddress" rows="3" required></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="landmark">Landmark</label>
+            <input type="text" id="landmark" name="landmark" placeholder="e.g., Near Metro Station">
+          </div>
+          <div class="form-group">
+            <label for="pincode">Pincode *</label>
+            <input type="text" id="pincode" name="pincode" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="city">City *</label>
+          <input type="text" id="city" name="city" required>
+        </div>
+        <div class="address-buttons">
+          <button type="button" class="btn btn-secondary" id="cancelAddress">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Address</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="coupon-modal" id="couponModal">
+    <div class="coupon-modal-content">
+      <h2 style="margin-bottom: 20px; color: #1e293b;">Apply Coupon</h2>
+      <div class="coupon-input-group">
+        <input type="text" id="couponCodeInput" placeholder="Enter coupon code">
+        <button id="applyCouponCode">Apply</button>
+      </div>
+      <h3 style="margin-bottom: 15px; color: #1e293b; font-size: 1rem;">Available Coupons</h3>
+      <div class="coupon-list" id="couponList">
+        <div class="coupon-item" data-code="SWIGGY50" data-discount="50" data-type="percentage" data-max="100">
+          <div class="coupon-code">SWIGGY50</div>
+          <div class="coupon-desc">50% OFF up to ₹100</div>
+        </div>
+        <div class="coupon-item" data-code="SAVE100" data-discount="100" data-type="fixed">
+          <div class="coupon-code">SAVE100</div>
+          <div class="coupon-desc">₹100 OFF on orders above ₹500</div>
+        </div>
+        <div class="coupon-item" data-code="FIRST30" data-discount="30" data-type="percentage" data-max="200">
+          <div class="coupon-code">FIRST30</div>
+          <div class="coupon-desc">30% OFF up to ₹200 for new users</div>
+        </div>
+        <div class="coupon-item" data-code="DELIVERY0" data-discount="0" data-type="delivery">
+          <div class="coupon-code">DELIVERY0</div>
+          <div class="coupon-desc">Free delivery on orders above ₹300</div>
+        </div>
+        <div class="coupon-item" data-code="WEEKEND25" data-discount="25" data-type="percentage" data-max="150">
+          <div class="coupon-code">WEEKEND25</div>
+          <div class="coupon-desc">25% OFF up to ₹150 on weekends</div>
+        </div>
+      </div>
+      <div class="address-buttons" style="margin-top: 20px;">
+        <button type="button" class="btn btn-secondary" id="cancelCoupon">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="confirmation-modal" id="confirmationModal">
+    <div class="confirmation-content">
+      <div class="success-icon">✓</div>
+      <div class="confirmation-title">Order Confirmed!</div>
+      <div class="confirmation-message">
+        Your order has been placed successfully. You will receive a confirmation SMS shortly.
+      </div>
+      <button class="btn btn-primary" id="trackOrderBtn">Track Order</button>
+    </div>
+  </div>
+
+  <div class="gift-card-modal" id="giftCardModal">
+    <div class="gift-card-modal-content">
+      <h2 style="margin-bottom: 20px; color: #1e293b;">Add Gift Card</h2>
+      <p style="color: #64748b; margin-bottom: 20px;">Choose a gift card design and add a personalized message.</p>
+      <div class="gift-card-options">
+        <div class="gift-card-option" data-design="birthday">
+          <h4>🎂 Birthday</h4>
+          <p>Perfect for celebrations</p>
+        </div>
+        <div class="gift-card-option" data-design="anniversary">
+          <h4>💕 Anniversary</h4>
+          <p>Celebrate special moments</p>
+        </div>
+        <div class="gift-card-option" data-design="thankyou">
+          <h4>🙏 Thank You</h4>
+          <p>Show appreciation</p>
+        </div>
+        <div class="gift-card-option" data-design="congratulations">
+          <h4>🎉 Congratulations</h4>
+          <p>Celebrate achievements</p>
+        </div>
+        <div class="gift-card-option" data-design="getwell">
+          <h4>🌻 Get Well Soon</h4>
+          <p>Wish speedy recovery</p>
+        </div>
+        <div class="gift-card-option" data-design="custom">
+          <h4>✨ Custom</h4>
+          <p>Your own message</p>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="giftMessage">Personal Message (Optional)</label>
+        <textarea id="giftMessage" placeholder="Write a personal message for the recipient..." rows="3"></textarea>
+      </div>
+      <div class="address-buttons">
+        <button type="button" class="btn btn-secondary" id="cancelGiftCard">Cancel</button>
+        <button type="button" class="btn btn-primary" id="addGiftCard">Add Gift Card (+₹25)</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="split-bill-modal" id="splitBillModal">
+    <div class="split-bill-modal-content">
+      <h2 style="margin-bottom: 20px; color: #1e293b;">Split Bill</h2>
+      <p style="color: #64748b; margin-bottom: 20px;">Choose how you want to split the bill with your friends.</p>
+      <div class="split-options">
+        <div class="split-option">
+          <input type="radio" name="splitMethod" value="equal" id="splitEqual">
+          <label for="splitEqual">Split equally among all</label>
+        </div>
+        <div class="split-option">
+          <input type="radio" name="splitMethod" value="custom" id="splitCustom">
+          <label for="splitCustom">Custom split amounts</label>
+        </div>
+        <div class="split-option">
+          <input type="radio" name="splitMethod" value="items" id="splitItems">
+          <label for="splitItems">Split by items ordered</label>
+        </div>
+      </div>
+      <div class="form-group" id="splitDetails" style="display: none;">
+        <label for="splitCount">Number of people</label>
+        <input type="number" id="splitCount" min="2" max="10" placeholder="2">
+      </div>
+      <div class="address-buttons">
+        <button type="button" class="btn btn-secondary" id="cancelSplitBill">Cancel</button>
+        <button type="button" class="btn btn-primary" id="confirmSplitBill">Enable Split Bill</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Dark mode
+    (function(){
+      const saved = localStorage.getItem('theme');
+      if(saved === 'dark') document.documentElement.classList.add('dark');
+      document.getElementById('dmBtn').addEventListener('click', ()=>{
+        document.documentElement.classList.toggle('dark');
+        localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+      });
+    })();
+
+    document.addEventListener('DOMContentLoaded', function() {
+      // Set user name in header if available
+      (function(){
+        const nav = document.querySelector('nav.nav-right a[href="my acc.html"]');
+        const savedName = localStorage.getItem('userName');
+        if (nav && savedName && savedName.trim()) nav.textContent = savedName;
+      })();
+
+      // ---- Cart rendering from localStorage ----
+      function getCart(){ try { return JSON.parse(localStorage.getItem('cart')||'[]'); } catch { return []; } }
+      function saveCart(items){ localStorage.setItem('cart', JSON.stringify(items)); }
+
+      const orderSummary = document.querySelector('.order-summary');
+      const billDetails = orderSummary.querySelector('.bill-details');
+
+      function renderCart(){
+        const cart = getCart();
+        const listContainer = orderSummary.querySelector('.cart-list') || document.createElement('div');
+        listContainer.className = 'cart-list';
+        listContainer.innerHTML = '';
+
+        let itemTotal = 0;
+
+        cart.forEach((item, idx) => {
+          const row = document.createElement('div');
+          row.className = 'food-item';
+
+          const img = document.createElement('img');
+          img.src = item.image || 'pay.avif';
+          img.alt = item.title || 'Item';
+
+          const details = document.createElement('div');
+          details.className = 'food-details';
+
+          const title = document.createElement('p');
+          title.className = 'food-title';
+          title.textContent = item.title || 'Item';
+
+          const sub = document.createElement('p');
+          sub.className = 'food-location';
+          sub.textContent = (item.badge ? (item.badge + ' • ') : '') + (item.timeNote || '');
+
+          const line = document.createElement('div');
+          line.className = 'choice-container';
+
+          const qty = document.createElement('div');
+          qty.className = 'quantity-picker';
+          const dec = document.createElement('button'); dec.textContent = '−';
+          const qtyVal = document.createElement('span'); qtyVal.textContent = String(item.qty || 1);
+          const inc = document.createElement('button'); inc.textContent = '+';
+          qty.appendChild(dec); qty.appendChild(qtyVal); qty.appendChild(inc);
+
+          const price = document.createElement('span');
+          price.className = 'price';
+          price.textContent = '₹' + (item.price * (item.qty || 1));
+
+          const removeBtn = document.createElement('button');
+          removeBtn.textContent = 'Remove';
+          removeBtn.style = 'margin-left:8px; border:1px solid #e2e8f0; background:#fff; padding:6px 10px; border-radius:6px; cursor:pointer; color:#475569;';
+
+          line.appendChild(qty);
+          line.appendChild(price);
+          line.appendChild(removeBtn);
+
+          details.appendChild(title);
+          details.appendChild(sub);
+          details.appendChild(line);
+
+          row.appendChild(img);
+          row.appendChild(details);
+
+          inc.addEventListener('click', () => {
+            const c = getCart();
+            c[idx].qty = Math.min(20, (c[idx].qty||1)+1);
+            saveCart(c);
+            renderCart();
+          });
+          dec.addEventListener('click', () => {
+            const c = getCart();
+            c[idx].qty = Math.max(1, (c[idx].qty||1)-1);
+            saveCart(c);
+            renderCart();
+          });
+          removeBtn.addEventListener('click', () => {
+            const c = getCart();
+            c.splice(idx,1);
+            saveCart(c);
+            renderCart();
+          });
+
+          listContainer.appendChild(row);
+
+          itemTotal += item.price * (item.qty || 1);
+        });
+
+        const firstSummaryChild = orderSummary.firstElementChild?.nextElementSibling;
+        if(firstSummaryChild && firstSummaryChild.classList.contains('food-item')){
+          const demoItems = orderSummary.querySelectorAll('.food-item');
+          demoItems.forEach(n => n.remove());
+        }
+        orderSummary.insertBefore(listContainer, billDetails);
+
+        const deliveryFee = cart.length ? 48 : 0;
+        const taxes = Math.round(itemTotal * 0.05);
+        const total = itemTotal + deliveryFee + taxes;
+
+        billDetails.innerHTML = ''+
+          '<div class="bill-row"><span>Item Total</span> <span>₹'+ itemTotal +'</span></div>'+
+          '<div class="bill-row"><span>Delivery Fee | 4.5 kms</span> <span>₹'+ deliveryFee +'</span></div>'+
+          '<div class="bill-row"><span>GST & Other Charges</span> <span>₹'+ taxes +'</span></div>'+
+          '<div class="bill-row total"><span>TO PAY</span> <span>₹'+ total +'</span></div>';
+      }
+
+      renderCart();
+
+      // ---- Scheduled delivery logic ----
+      const deliverNow = document.getElementById('now');
+      const schedule = document.getElementById('schedule');
+      const dateContainer = document.querySelector('.date-input-container');
+      const timeContainer = document.querySelector('.time-input-container');
+      const dateInput = document.getElementById('delivery-date');
+      const timeInput = document.getElementById('delivery-time');
+      const deliveryTimeDisplay = document.getElementById('deliveryTimeDisplay');
+      const now = new Date();
+      const todayStr = now.toISOString().split('T')[0];
+
+      // Add a 30-minute buffer for same-day scheduling
+      function getMinTimeForToday() {
+        const bufferMinutes = 30;
+        const minTime = new Date(now.getTime() + bufferMinutes * 60000);
+        return minTime.toTimeString().split(' ')[0].slice(0, 5);
+      }
+
+      dateInput.min = todayStr;
+
+      dateInput.addEventListener('change', function() {
+        if (this.value === todayStr) {
+          timeInput.min = getMinTimeForToday();
+        } else {
+          timeInput.min = '00:00';
+        }
+        if (timeInput.value && timeInput.value < timeInput.min && this.value === todayStr) {
+          timeInput.value = timeInput.min;
+        }
+        updateDeliveryTimeDisplay();
+      });
+
+      deliverNow.addEventListener('change', function() {
+        if (this.checked) {
+          dateContainer.style.display = 'none';
+          timeContainer.style.display = 'none';
+          dateInput.disabled = true;
+          timeInput.disabled = true;
+          deliveryTimeDisplay.textContent = '43 MINS';
+          deliveryTimeDisplay.style.color = '#10b981';
+        }
+      });
+
+      schedule.addEventListener('change', function() {
+        if (this.checked) {
+          dateContainer.style.display = 'block';
+          timeContainer.style.display = 'block';
+          dateInput.disabled = false;
+          timeInput.disabled = false;
+          if (!dateInput.value) {
+            dateInput.value = todayStr;
+            timeInput.min = getMinTimeForToday();
+          }
+          if (!timeInput.value || (dateInput.value === todayStr && timeInput.value < timeInput.min)) {
+            timeInput.value = getMinTimeForToday();
+          }
+        }
+        updateDeliveryTimeDisplay();
+      });
+
+      function updateDeliveryTimeDisplay() {
+        if (deliverNow.checked) {
+          deliveryTimeDisplay.textContent = '43 MINS';
+          deliveryTimeDisplay.style.color = '#10b981';
+        } else if (schedule.checked) {
+          const deliveryDate = dateInput.value;
+          const deliveryTime = timeInput.value;
+          if (deliveryDate && deliveryTime) {
+            const scheduledDt = new Date(deliveryDate + 'T' + deliveryTime + ':00');
+            const diffMs = scheduledDt - now;
+            if (diffMs > 30 * 60000) {
+              const hours = Math.floor(diffMs / 3600000);
+              const mins = Math.ceil((diffMs % 3600000) / 60000);
+              deliveryTimeDisplay.textContent = hours > 0 ? `${hours} HR ${mins} MINS` : `${mins} MINS`;
+              deliveryTimeDisplay.style.color = '#10b981';
+            } else {
+              deliveryTimeDisplay.textContent = 'Please select a future time';
+              deliveryTimeDisplay.style.color = '#ef4444';
+            }
+          } else {
+            deliveryTimeDisplay.textContent = 'Select date and time';
+            deliveryTimeDisplay.style.color = '#ef4444';
+          }
+        }
+      }
+
+      timeInput.addEventListener('change', updateDeliveryTimeDisplay);
+
+      if (schedule.checked) {
+        dateContainer.style.display = 'block';
+        timeContainer.style.display = 'block';
+        dateInput.disabled = false;
+        timeInput.disabled = false;
+        if (!dateInput.value) dateInput.value = todayStr;
+        if (!timeInput.value) timeInput.value = getMinTimeForToday();
+      }
+      updateDeliveryTimeDisplay();
+
+      // ---- Address Management ----
+      let currentAddress = {
+        name: 'College',
+        phone: '+91 98765 43210',
+        email: '',
+        street: 'amal jyothi college of engineering koovappally,kerala, P.O Kanjirapally – Erumely Road, Koovappally, Kerala 686518, India',
+        landmark: '',
+        pincode: '686518',
+        city: 'Kottayam'
+      };
+
+      function getCurrentAddress() {
+        return currentAddress;
+      }
+
+      function updateAddressDisplay() {
+        document.getElementById('addressName').textContent = currentAddress.name;
+        document.getElementById('addressDetails').textContent = currentAddress.street;
+        document.getElementById('addressContact').textContent = `Phone: ${currentAddress.phone}`;
+      }
+
+      document.getElementById('changeAddress').addEventListener('click', () => {
+        document.getElementById('fullName').value = currentAddress.name;
+        document.getElementById('phone').value = currentAddress.phone;
+        document.getElementById('email').value = currentAddress.email;
+        document.getElementById('streetAddress').value = currentAddress.street;
+        document.getElementById('landmark').value = currentAddress.landmark;
+        document.getElementById('pincode').value = currentAddress.pincode;
+        document.getElementById('city').value = currentAddress.city;
+        document.getElementById('addressModal').style.display = 'flex';
+      });
+
+      document.getElementById('cancelAddress').addEventListener('click', () => {
+        document.getElementById('addressModal').style.display = 'none';
+      });
+
+      document.getElementById('addressForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        currentAddress = {
+          name: document.getElementById('fullName').value,
+          phone: document.getElementById('phone').value,
+          email: document.getElementById('email').value,
+          street: document.getElementById('streetAddress').value,
+          landmark: document.getElementById('landmark').value,
+          pincode: document.getElementById('pincode').value,
+          city: document.getElementById('city').value
+        };
+        updateAddressDisplay();
+        document.getElementById('addressModal').style.display = 'none';
+      });
+
+      // ---- Coupon System ----
+      let appliedCoupon = null;
+
+      function calculateTotal() {
+        const cart = getCart();
+        let itemTotal = 0;
+        cart.forEach(item => {
+          itemTotal += item.price * (item.qty || 1);
+        });
+        
+        let featuresCost = 0;
+        if (orderFeatures.ecoPacking) featuresCost += 5;
+        if (orderFeatures.giftCard) featuresCost += 25;
+
+        const subtotal = itemTotal + featuresCost;
+        const deliveryFee = cart.length ? 48 : 0;
+        let discountAmount = 0;
+        
+        if (appliedCoupon) {
+          if (appliedCoupon.type === 'percentage') {
+            discountAmount = Math.min((subtotal * appliedCoupon.discount / 100), appliedCoupon.max || Infinity);
+          } else if (appliedCoupon.type === 'fixed') {
+            discountAmount = appliedCoupon.discount;
+          } else if (appliedCoupon.type === 'delivery') {
+            discountAmount = deliveryFee;
+          }
+        }
+        
+        const taxableAmount = subtotal - discountAmount;
+        const taxes = Math.round(taxableAmount * 0.05);
+        const selectedPayment = document.querySelector('input[name="payment"]:checked');
+        const codCharge = (selectedPayment && selectedPayment.id === 'cod') ? 10 : 0;
+        
+        return Math.max(0, taxableAmount + taxes + deliveryFee + codCharge);
+      }
+
+      function updateBillDetails() {
+        const cart = getCart();
+        let itemTotal = 0;
+        cart.forEach(item => {
+          itemTotal += item.price * (item.qty || 1);
+        });
+        
+        let featuresCost = 0;
+        if (orderFeatures.ecoPacking) featuresCost += 5;
+        if (orderFeatures.giftCard) featuresCost += 25;
+
+        const subtotal = itemTotal + featuresCost;
+        let deliveryFee = cart.length ? 48 : 0;
+        let discountAmount = 0;
+        
+        if (appliedCoupon) {
+          if (appliedCoupon.type === 'percentage') {
+            discountAmount = Math.min((subtotal * appliedCoupon.discount / 100), appliedCoupon.max || Infinity);
+          } else if (appliedCoupon.type === 'fixed') {
+            discountAmount = appliedCoupon.discount;
+          } else if (appliedCoupon.type === 'delivery') {
+            discountAmount = deliveryFee;
+            deliveryFee = 0;
+          }
+        }
+        
+        const taxableAmount = subtotal - discountAmount + deliveryFee;
+        const gst = Math.round(taxableAmount * 0.18);
+        const selectedPayment = document.querySelector('input[name="payment"]:checked');
+        const codCharge = (selectedPayment && selectedPayment.id === 'cod') ? 10 : 0;
+        
+        const total = taxableAmount + gst + codCharge;
+
+        const billDetailsEl = document.querySelector('.bill-details');
+        let billHTML = `
+          <div class="bill-row"><span>Item Total</span> <span>₹${itemTotal}</span></div>
+          <div class="bill-row"><span>Delivery Fee | 4.5 kms</span> <span>₹${deliveryFee}</span></div>
+        `;
+        
+        if (discountAmount > 0) {
+          billHTML += `<div class="bill-row" style="color: #10b981;"><span>Discount (${appliedCoupon.code})</span> <span>-₹${Math.round(discountAmount)}</span></div>`;
+        }
+        
+        if (featuresCost > 0) {
+          billHTML += `<div class="bill-row"><span>Order Features</span> <span>+₹${featuresCost}</span></div>`;
+        }
+        
+        billHTML += `<div class="bill-row"><span>GST (18%)</span> <span>₹${gst}</span></div>`;
+        
+        if (codCharge > 0) {
+          billHTML += `<div class="bill-row cod-charge"><span>Cash on Delivery Charge</span> <span>₹${codCharge}</span></div>`;
+        }
+        
+        billHTML += `<div class="bill-row total"><span>TO PAY</span> <span>₹${total}</span></div>`;
+        
+        billDetailsEl.innerHTML = billHTML;
+      }
+
+      document.getElementById('applyCouponBtn').addEventListener('click', () => {
+        document.getElementById('couponModal').style.display = 'flex';
+      });
+
+      document.getElementById('cancelCoupon').addEventListener('click', () => {
+        document.getElementById('couponModal').style.display = 'none';
+      });
+
+      document.getElementById('applyCouponCode').addEventListener('click', () => {
+        const code = document.getElementById('couponCodeInput').value.trim().toUpperCase();
+        applyCoupon(code);
+      });
+
+      document.getElementById('couponCodeInput').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          const code = document.getElementById('couponCodeInput').value.trim().toUpperCase();
+          applyCoupon(code);
+        }
+      });
+
+      document.querySelectorAll('.coupon-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const code = item.dataset.code;
+          document.getElementById('couponCodeInput').value = code;
+          applyCoupon(code);
+        });
+      });
+
+      function applyCoupon(code) {
+        const couponItem = document.querySelector(`[data-code="${code}"]`);
+        if (!couponItem) {
+          alert('Invalid coupon code!');
+          return;
+        }
+
+        const cart = getCart();
+        const itemTotal = cart.reduce((sum, item) => sum + (item.price * (item.qty || 1)), 0);
+        
+        if (code === 'SAVE100' && itemTotal < 500) {
+          alert('This coupon requires minimum order value of ₹500');
+          return;
+        }
+        if (code === 'DELIVERY0' && itemTotal < 300) {
+          alert('This coupon requires minimum order value of ₹300');
+          return;
+        }
+
+        appliedCoupon = {
+          code: code,
+          discount: parseInt(couponItem.dataset.discount),
+          type: couponItem.dataset.type,
+          max: couponItem.dataset.max ? parseInt(couponItem.dataset.max) : null
+        };
+
+        document.getElementById('appliedCouponName').textContent = code;
+        document.getElementById('appliedCouponDesc').textContent = couponItem.querySelector('.coupon-desc').textContent;
+        
+        let discountText = '';
+        if (appliedCoupon.type === 'percentage') {
+          discountText = `-₹${Math.min((itemTotal * appliedCoupon.discount / 100), appliedCoupon.max || Infinity)}`;
+        } else if (appliedCoupon.type === 'fixed') {
+          discountText = `-₹${appliedCoupon.discount}`;
+        } else if (appliedCoupon.type === 'delivery') {
+          discountText = 'Free Delivery';
+        }
+        document.getElementById('appliedCouponDiscount').textContent = discountText;
+        
+        document.getElementById('appliedCoupon').classList.add('show');
+        document.getElementById('applyCouponBtn').style.display = 'none';
+        document.getElementById('couponModal').style.display = 'none';
+        
+        updateBillDetails();
+      }
+
+      document.getElementById('removeCoupon').addEventListener('click', () => {
+        appliedCoupon = null;
+        document.getElementById('appliedCoupon').classList.remove('show');
+        document.getElementById('applyCouponBtn').style.display = 'block';
+        updateBillDetails();
+      });
+
+      // ---- Order Confirmation and Tracking ----
+      const payBtn = document.querySelector('.payment-button');
+      payBtn.addEventListener('click', function() {
+        const cart = getCart();
+        if (!cart.length) {
+          alert('Your cart is empty.');
+          return;
+        }
+
+        if (schedule.checked) {
+          const deliveryDate = dateInput.value;
+          const deliveryTime = timeInput.value;
+          if (!deliveryDate || !deliveryTime) {
+            alert('Please select delivery date and time.');
+            return;
+          }
+          const scheduledDateTime = new Date(deliveryDate + 'T' + deliveryTime + ':00');
+          const minTime = new Date(now.getTime() + 30 * 60000);
+          if (scheduledDateTime <= minTime) {
+            alert('Please select a delivery time at least 30 minutes from now.');
+            return;
+          }
+        }
+
+        let estimatedDelivery;
+        let scheduledDateTimeReadable = null;
+        if (schedule.checked) {
+          const deliveryDate = dateInput.value;
+          const deliveryTime = timeInput.value;
+          estimatedDelivery = new Date(deliveryDate + 'T' + deliveryTime + ':00').toISOString();
+          scheduledDateTimeReadable = new Date(deliveryDate + 'T' + deliveryTime + ':00').toLocaleString('en-IN', {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: 'numeric',
+            hour12: true
+          });
+        } else {
+          estimatedDelivery = new Date(now.getTime() + 43 * 60000).toISOString();
+          scheduledDateTimeReadable = new Date(now.getTime() + 43 * 60000).toLocaleString('en-IN', {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: 'numeric',
+            hour12: true
+          });
+        }
+
+        const orderData = {
+          id: 'ORD' + Date.now(),
+          items: cart,
+          address: getCurrentAddress(),
+          paymentMethod: document.querySelector('input[name="payment"]:checked').id,
+          total: calculateTotal(),
+          status: 'confirmed',
+          timestamp: new Date().toISOString(),
+          estimatedDelivery: estimatedDelivery,
+          isScheduled: schedule.checked,
+          scheduledDateTimeReadable: scheduledDateTimeReadable,
+          orderFeatures: orderFeatures,
+          appliedCoupon: appliedCoupon
+        };
+
+        const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+        orders.unshift(orderData);
+        localStorage.setItem('orders', JSON.stringify(orders));
+        localStorage.removeItem('cart');
+
+        document.getElementById('confirmationModal').style.display = 'flex';
+      });
+
+      document.getElementById('trackOrderBtn').addEventListener('click', () => {
+        document.getElementById('confirmationModal').style.display = 'none';
+        window.location.href = 'tracking.html';
+      });
+
+      // ---- Order Features Functionality ----
+      const ecoPackingToggle = document.getElementById('ecoPackingToggle');
+      const giftCardToggle = document.getElementById('giftCardToggle');
+      const splitBillToggle = document.getElementById('splitBillToggle');
+      const giftCardModal = document.getElementById('giftCardModal');
+      const splitBillModal = document.getElementById('splitBillModal');
+
+      let orderFeatures = {
+        ecoPacking: false,
+        giftCard: false,
+        splitBill: false,
+        giftCardDesign: '',
+        giftCardMessage: '',
+        splitBillMethod: '',
+        splitBillCount: 2
+      };
+
+      ecoPackingToggle.addEventListener('click', () => {
+        orderFeatures.ecoPacking = !orderFeatures.ecoPacking;
+        ecoPackingToggle.classList.toggle('active', orderFeatures.ecoPacking);
+        updateBillDetails();
+      });
+
+      giftCardToggle.addEventListener('click', () => {
+        if (!orderFeatures.giftCard) {
+          giftCardModal.style.display = 'flex';
+        } else {
+          orderFeatures.giftCard = false;
+          giftCardToggle.classList.remove('active');
+          updateBillDetails();
+        }
+      });
+
+      splitBillToggle.addEventListener('click', () => {
+        if (!orderFeatures.splitBill) {
+          splitBillModal.style.display = 'flex';
+        } else {
+          orderFeatures.splitBill = false;
+          splitBillToggle.classList.remove('active');
+          updateBillDetails();
+        }
+      });
+
+      const giftCardOptions = document.querySelectorAll('.gift-card-option');
+      let selectedGiftDesign = '';
+
+      giftCardOptions.forEach(option => {
+        option.addEventListener('click', () => {
+          giftCardOptions.forEach(opt => opt.classList.remove('selected'));
+          option.classList.add('selected');
+          selectedGiftDesign = option.dataset.design;
+        });
+      });
+
+      document.getElementById('addGiftCard').addEventListener('click', () => {
+        if (selectedGiftDesign) {
+          orderFeatures.giftCard = true;
+          orderFeatures.giftCardDesign = selectedGiftDesign;
+          orderFeatures.giftCardMessage = document.getElementById('giftMessage').value;
+          giftCardToggle.classList.add('active');
+          giftCardModal.style.display = 'none';
+          updateBillDetails();
+        } else {
+          alert('Please select a gift card design.');
+        }
+      });
+
+      document.getElementById('cancelGiftCard').addEventListener('click', () => {
+        giftCardModal.style.display = 'none';
+      });
+
+      const splitOptions = document.querySelectorAll('.split-option');
+      const splitDetails = document.getElementById('splitDetails');
+      let selectedSplitMethod = '';
+
+      splitOptions.forEach(option => {
+        option.addEventListener('click', () => {
+          splitOptions.forEach(opt => opt.classList.remove('selected'));
+          option.classList.add('selected');
+          selectedSplitMethod = option.querySelector('input').value;
+          if (selectedSplitMethod === 'equal' || selectedSplitMethod === 'custom') {
+            splitDetails.style.display = 'block';
+          } else {
+            splitDetails.style.display = 'none';
+          }
+        });
+      });
+
+      document.getElementById('confirmSplitBill').addEventListener('click', () => {
+        if (selectedSplitMethod) {
+          orderFeatures.splitBill = true;
+          orderFeatures.splitBillMethod = selectedSplitMethod;
+          const splitCount = document.getElementById('splitCount').value;
+          orderFeatures.splitBillCount = splitCount ? parseInt(splitCount) : 2;
+          splitBillToggle.classList.add('active');
+          splitBillModal.style.display = 'none';
+          updateBillDetails();
+        } else {
+          alert('Please select a split method.');
+        }
+      });
+
+      document.getElementById('cancelSplitBill').addEventListener('click', () => {
+        splitBillModal.style.display = 'none';
+      });
+
+      document.querySelectorAll('input[name="payment"]').forEach(radio => {
+        radio.addEventListener('change', updateBillDetails);
+      });
+
+      document.addEventListener('click', (e) => {
+        if (e.target.classList.contains('address-modal')) {
+          document.getElementById('addressModal').style.display = 'none';
+        }
+        if (e.target.classList.contains('coupon-modal')) {
+          document.getElementById('couponModal').style.display = 'none';
+        }
+        if (e.target.classList.contains('confirmation-modal')) {
+          document.getElementById('confirmationModal').style.display = 'none';
+        }
+        if (e.target.classList.contains('gift-card-modal')) {
+          document.getElementById('giftCardModal').style.display = 'none';
+        }
+        if (e.target.classList.contains('split-bill-modal')) {
+          document.getElementById('splitBillModal').style.display = 'none';
+        }
+      });
+    });
+  </script>
+</body>
+</html>

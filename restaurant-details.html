@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Restaurant Details</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body class="bg-gray-50">
+    <header class="bg-white shadow-sm">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 id="restName" class="text-2xl font-bold text-orange-600">Restaurant Name</h1>
+            <div class="flex items-center gap-4">
+                <a href="help.html" class="flex items-center gap-2 px-3 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition text-sm">
+                    <i class="fas fa-question-circle"></i>
+                    <span class="hidden sm:inline">Help</span>
+                </a>
+                <div class="relative">
+                    <button id="cartBtn" class="flex items-center">
+                        <i class="fas fa-shopping-cart text-xl"></i>
+                        <span id="cartCount" class="ml-2 bg-orange-600 text-white rounded-full px-2 py-1">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+        <div class="mb-6">
+            <img id="restHero" src="" alt="" class="w-full rounded-xl shadow max-h-72 object-cover"/>
+        </div>
+        <div id="aboutBox" class="bg-white rounded-xl shadow p-4 mb-6">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                <div>
+                    <div id="restCuisines" class="text-gray-600"></div>
+                    <div id="restLocation" class="text-gray-500 text-sm"></div>
+                </div>
+                <div class="flex gap-4 text-sm">
+                    <div class="text-center"><div class="font-bold" id="restRating">⭐ 4.4</div><div class="text-gray-500">Rating</div></div>
+                    <div class="text-center"><div class="font-bold" id="restEta">--</div><div class="text-gray-500">ETA</div></div>
+                    <div class="text-center"><div class="font-bold" id="restCost">--</div><div class="text-gray-500">Cost for two</div></div>
+                </div>
+            </div>
+        </div>
+        <div id="categoryChips" class="flex flex-wrap gap-2 mb-4"></div>
+                <div id="menuItems" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <!-- 20 KFC Items with image upload -->
+                        <script>
+                        const kfcItems = [
+                            { id: 'zinger', name: 'Zinger Burger', price: 149, description: 'Crispy chicken burger with spicy coating', image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&h=300&fit=crop&crop=center', category: 'Burgers' },
+                            { id: 'chicken_bucket', name: 'Chicken Bucket (8 pcs)', price: 399, description: '8 pieces of original recipe chicken', image: 'https://images.unsplash.com/photo-1604503468506-a8da13d82791?w=400&h=300&fit=crop&crop=center', category: 'Chicken' },
+                            { id: 'popcorn', name: 'Popcorn Chicken', price: 129, description: 'Signature bite-sized chicken pieces', image: 'https://images.unsplash.com/photo-1606491956689-2ea866880c84?w=400&h=300&fit=crop&crop=center', category: 'Snacks' },
+                            { id: 'chicken_wings', name: 'Hot Wings (6 pcs)', price: 199, description: 'Spicy chicken wings', image: 'https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=400&h=300&fit=crop&crop=center', category: 'Chicken' },
+                            { id: 'chicken_strips', name: 'Chicken Strips (4 pcs)', price: 179, description: 'Tender chicken strips', image: 'https://images.unsplash.com/photo-1604503468506-a8da13d82791?w=400&h=300&fit=crop&crop=center', category: 'Chicken' },
+                            { id: 'chicken_burger', name: 'Chicken Burger', price: 119, description: 'Classic chicken burger', image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&h=300&fit=crop&crop=center', category: 'Burgers' },
+                            { id: 'chicken_roll', name: 'Chicken Roll', price: 89, description: 'Spicy chicken wrapped in paratha', image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400&h=300&fit=crop&crop=center', category: 'Rolls' },
+                            { id: 'chicken_wrap', name: 'Chicken Wrap', price: 139, description: 'Chicken wrapped in tortilla', image: 'https://images.unsplash.com/photo-1529042410759-befb1204b468?w=400&h=300&fit=crop&crop=center', category: 'Wraps' },
+                            { id: 'fries', name: 'French Fries', price: 79, description: 'Golden crispy fries', image: 'https://images.unsplash.com/photo-1576107232684-1279f390859f?w=400&h=300&fit=crop&crop=center', category: 'Sides' },
+                            { id: 'chicken_nuggets', name: 'Chicken Nuggets (6 pcs)', price: 149, description: 'Bite-sized chicken nuggets', image: 'https://images.unsplash.com/photo-1606491956689-2ea866880c84?w=400&h=300&fit=crop&crop=center', category: 'Snacks' },
+                            { id: 'chicken_sandwich', name: 'Chicken Sandwich', price: 159, description: 'Grilled chicken sandwich', image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&h=300&fit=crop&crop=center', category: 'Sandwiches' },
+                            { id: 'chicken_curry', name: 'Chicken Curry Rice', price: 199, description: 'Spicy chicken curry with rice', image: 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=400&h=300&fit=crop&crop=center', category: 'Rice Meals' },
+                            { id: 'chicken_biryani', name: 'Chicken Biryani', price: 229, description: 'Aromatic chicken biryani', image: 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=400&h=300&fit=crop&crop=center', category: 'Rice Meals' },
+                            { id: 'chicken_lollipop', name: 'Chicken Lollipop (6 pcs)', price: 189, description: 'Spicy chicken lollipops', image: 'https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=400&h=300&fit=crop&crop=center', category: 'Starters' },
+                            { id: 'chicken_65', name: 'Chicken 65', price: 169, description: 'Spicy fried chicken pieces', image: 'https://images.unsplash.com/photo-1606491956689-2ea866880c84?w=400&h=300&fit=crop&crop=center', category: 'Starters' },
+                            { id: 'chicken_manchurian', name: 'Chicken Manchurian', price: 179, description: 'Indo-Chinese chicken dish', image: 'https://images.unsplash.com/photo-1604503468506-a8da13d82791?w=400&h=300&fit=crop&crop=center', category: 'Starters' },
+                            { id: 'chicken_fried_rice', name: 'Chicken Fried Rice', price: 189, description: 'Chicken fried rice with vegetables', image: 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=400&h=300&fit=crop&crop=center', category: 'Rice Meals' },
+                            { id: 'chicken_noodles', name: 'Chicken Noodles', price: 179, description: 'Spicy chicken noodles', image: 'https://images.unsplash.com/photo-1604503468506-a8da13d82791?w=400&h=300&fit=crop&crop=center', category: 'Noodles' },
+                            { id: 'chicken_soup', name: 'Chicken Soup', price: 99, description: 'Hot and spicy chicken soup', image: 'https://images.unsplash.com/photo-1547592180-85f173990554?w=400&h=300&fit=crop&crop=center', category: 'Soups' },
+                            { id: 'chicken_salad', name: 'Chicken Salad', price: 109, description: 'Fresh chicken salad', image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&h=300&fit=crop&crop=center', category: 'Salads' }
+                        ];
+                        function handleKfcImageUpload(event, idx) {
+                            const file = event.target.files[0];
+                            if (file) {
+                                const reader = new FileReader();
+                                reader.onload = function(e) {
+                                    document.getElementById('kfc-img-' + idx).src = e.target.result;
+                                };
+                                reader.readAsDataURL(file);
+                            }
+                        }
+                        document.addEventListener('DOMContentLoaded', function() {
+                            const menuItems = document.getElementById('menuItems');
+                            menuItems.innerHTML = kfcItems.map((item, idx) => `
+                                <div class='bg-white rounded-xl shadow p-4 flex flex-col items-center'>
+                                    <img id='kfc-img-${idx}' src='${item.image}' alt='${item.name}' class='w-32 h-32 object-cover rounded-lg mb-3 border' />
+                                    <label class='mb-2 text-sm text-gray-600 font-bold'>${item.name}</label>
+                                    <div class='text-xs text-gray-500 mb-2'>${item.description}</div>
+                                    <div class='mb-2 text-orange-600 font-semibold'>₹${item.price}</div>
+                                    <input type='file' accept='image/*' class='mb-2' onchange='handleKfcImageUpload(event, ${idx})' />
+                                    <button class='bg-orange-500 text-white px-4 py-1 rounded mt-2'>Add to Cart</button>
+                                </div>
+                            `).join('');
+                        });
+                        </script>
+                                            <!-- 20 Porch Grill Items -->
+                                            <script>
+                                            const porchGrillItems = [
+                                                { id: 'alfaham', name: 'Al Faham', price: 249, description: 'Juicy charcoal grilled chicken', image: 'https://images.unsplash.com/photo-1598515214211-89d3c73ae83b?w=400&h=300&fit=crop&crop=center', category: 'Grill' },
+                                                { id: 'shawarma', name: 'Chicken Shawarma', price: 99, description: 'Arabian classic roll', image: 'https://images.unsplash.com/photo-1529042410759-befb1204b468?w=400&h=300&fit=crop&crop=center', category: 'Shawarma' },
+                                                { id: 'mutton_biryani', name: 'Mutton Biryani', price: 299, description: 'Aromatic mutton biryani', image: 'https://images.unsplash.com/photo-1559847844-5315695dadae?w=400&h=300&fit=crop&crop=center', category: 'Biryani' },
+                                                { id: 'chicken_biryani', name: 'Chicken Biryani', price: 229, description: 'Spicy chicken biryani', image: 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=400&h=300&fit=crop&crop=center', category: 'Biryani' },
+                                                { id: 'beef_biryani', name: 'Beef Biryani', price: 279, description: 'Tender beef biryani', image: 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=400&h=300&fit=crop&crop=center', category: 'Biryani' },
+                                                { id: 'grilled_chicken', name: 'Grilled Chicken', price: 199, description: 'Marinated grilled chicken', image: 'https://images.unsplash.com/photo-1604503468506-a8da13d82791?w=400&h=300&fit=crop&crop=center', category: 'Grill' },
+                                                { id: 'chicken_tikka', name: 'Chicken Tikka', price: 189, description: 'Tandoori chicken tikka', image: 'https://images.unsplash.com/photo-1606491956689-2ea866880c84?w=400&h=300&fit=crop&crop=center', category: 'Tandoor' },
+                                                { id: 'mutton_tikka', name: 'Mutton Tikka', price: 239, description: 'Spicy mutton tikka', image: 'https://images.unsplash.com/photo-1574484284002-952d92456975?w=400&h=300&fit=crop&crop=center', category: 'Tandoor' },
+                                                { id: 'fish_tikka', name: 'Fish Tikka', price: 219, description: 'Marinated fish tikka', image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400&h=300&fit=crop&crop=center', category: 'Seafood' },
+                                                { id: 'prawn_tikka', name: 'Prawn Tikka', price: 259, description: 'Spicy prawn tikka', image: 'https://images.unsplash.com/photo-1559847844-5315695dadae?w=400&h=300&fit=crop&crop=center', category: 'Seafood' },
+                                                { id: 'chicken_kebab', name: 'Chicken Kebab', price: 179, description: 'Minced chicken kebab', image: 'https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=400&h=300&fit=crop&crop=center', category: 'Kebabs' },
+                                                { id: 'mutton_kebab', name: 'Mutton Kebab', price: 229, description: 'Spicy mutton kebab', image: 'https://images.unsplash.com/photo-1574484284002-952d92456975?w=400&h=300&fit=crop&crop=center', category: 'Kebabs' },
+                                                { id: 'chicken_roll', name: 'Chicken Roll', price: 89, description: 'Spicy chicken roll', image: 'https://images.unsplash.com/photo-1529042410759-befb1204b468?w=400&h=300&fit=crop&crop=center', category: 'Rolls' },
+                                                { id: 'mutton_roll', name: 'Mutton Roll', price: 119, description: 'Tender mutton roll', image: 'https://images.unsplash.com/photo-1529042410759-befb1204b468?w=400&h=300&fit=crop&crop=center', category: 'Rolls' },
+                                                { id: 'chicken_mandi', name: 'Chicken Mandi', price: 299, description: 'Traditional chicken mandi', image: 'https://images.unsplash.com/photo-1598515214211-89d3c73ae83b?w=400&h=300&fit=crop&crop=center', category: 'Mandi' },
+                                                { id: 'mutton_mandi', name: 'Mutton Mandi', price: 349, description: 'Aromatic mutton mandi', image: 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=400&h=300&fit=crop&crop=center', category: 'Mandi' },
+                                                { id: 'chicken_majboos', name: 'Chicken Majboos', price: 279, description: 'Spiced chicken majboos', image: 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=400&h=300&fit=crop&crop=center', category: 'Rice' },
+                                                { id: 'mutton_majboos', name: 'Mutton Majboos', price: 329, description: 'Rich mutton majboos', image: 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=400&h=300&fit=crop&crop=center', category: 'Rice' },
+                                                { id: 'chicken_curry', name: 'Chicken Curry', price: 199, description: 'Spicy chicken curry', image: 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=400&h=300&fit=crop&crop=center', category: 'Curries' },
+                                                { id: 'mutton_curry', name: 'Mutton Curry', price: 249, description: 'Tender mutton curry', image: 'https://images.unsplash.com/photo-1598515214211-89d3c73ae83b?w=400&h=300&fit=crop&crop=center', category: 'Curries' }
+                                            ];
+                                            document.addEventListener('DOMContentLoaded', function() {
+                                                const menuItems = document.getElementById('menuItems');
+                                                menuItems.innerHTML = porchGrillItems.map((item, idx) => `
+                                                    <div class='bg-white rounded-xl shadow p-4 flex flex-col items-center'>
+                                                        <img src='${item.image}' alt='${item.name}' class='w-32 h-32 object-cover rounded-lg mb-3 border' />
+                                                        <label class='mb-2 text-sm text-gray-600 font-bold'>${item.name}</label>
+                                                        <div class='text-xs text-gray-500 mb-2'>${item.description}</div>
+                                                        <div class='mb-2 text-orange-600 font-semibold'>₹${item.price}</div>
+                                                        <button class='bg-orange-500 text-white px-4 py-1 rounded mt-2'>Add to Cart</button>
+                                                    </div>
+                                                `).join('');
+                                            });
+                                            </script>
+                </div>
+    </main>
+
+    <!-- Cart Sidebar -->
+    <div id="cartSidebar" class="fixed right-0 top-0 h-full w-80 bg-white shadow-lg transform translate-x-full transition-transform duration-300 ease-in-out">
+        <div class="p-4">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold">Your Cart</h2>
+                <button id="closeCart" class="text-gray-500"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="cartItems" class="space-y-4">
+                <!-- Cart items will be added here -->
+            </div>
+            <div class="mt-6 border-t pt-4">
+                <div class="flex justify-between mb-2">
+                    <span>Subtotal:</span>
+                    <span id="cartTotal">₹0</span>
+                </div>
+                <button id="checkoutBtn" class="w-full bg-orange-600 text-white py-2 rounded-md">Checkout</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating MENU button and panel -->
+    <button id="menuFab" class="fixed bottom-6 right-6 bg-black text-white w-16 h-16 rounded-full shadow-lg flex items-center justify-center text-sm">MENU</button>
+    <div id="menuPanel" class="fixed bottom-24 right-6 bg-white shadow-lg rounded-lg p-3 hidden max-h-80 overflow-auto">
+        <div id="menuPanelList" class="space-y-2"></div>
+    </div>
+
+    <script>
+        // Restaurant meta (about) and menus
+        const restaurantsMeta = {
+            'kfc': { cuisines: 'Burgers, Fast Food, Rolls & Wraps', location: 'Kanjirappally', rating: 4.3, eta: '25-30 mins', costForTwo: '₹400 for two' },
+            'porch_grill': { cuisines: 'Arabian, Grill, Biryani, Barbecue', location: 'Cheppumpara', rating: 4.6, eta: '35-40 mins', costForTwo: '₹500 for two' },
+            'cutiepie_cakes': { cuisines: 'Desserts, Bakery, Cafe', location: 'Kanjirappally', rating: 4.6, eta: '25-30 mins', costForTwo: '₹250 for two' },
+            'lazza_ice_cream': { cuisines: 'Ice Cream, Desserts', location: 'Kanjirappally', rating: 4.7, eta: '25-30 mins', costForTwo: '₹200 for two' },
+            'apple_bee': { cuisines: 'Chinese, Tandoor, Arabian', location: 'Kottayam Kumily Road', rating: 4.3, eta: '45-55 mins', costForTwo: '₹450 for two' },
+            'kottaram': { cuisines: 'Kerala, Biryani, Arabian', location: 'Kollam Theni Highway', rating: 4.3, eta: '35-40 mins', costForTwo: '₹500 for two' },
+            'cafe_cocoon': { cuisines: 'Continental, Arabian, Kebabs', location: 'Cheppumpara', rating: 4.4, eta: '50-60 mins', costForTwo: '₹350 for two' },
+            'funfee': { cuisines: 'Burgers, Desserts', location: 'Town Center', rating: 4.3, eta: '60-70 mins', costForTwo: '₹300 for two' },
+            'cafe_fargozi': { cuisines: 'Shawarma, Lebanese', location: 'Downtown', rating: 4.7, eta: '35-40 mins', costForTwo: '₹350 for two' },
+            'nanuha': { cuisines: 'South Indian, Dosa', location: 'City Center', rating: 4.5, eta: '40-50 mins', costForTwo: '₹200 for two' },
+            'tass_bakery': { cuisines: 'Cakes, Bakery', location: 'Kanjirapally', rating: 4.5, eta: '40-50 mins', costForTwo: '₹250 for two' },
+            'spice_haven': { cuisines: 'North Indian, Tandoor', location: 'City Center', rating: 4.4, eta: '30-35 mins', costForTwo: '₹500 for two' }
+        };
+
+                function handleMenuImageUpload(event, idx) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('menu-img-' + idx).src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        function renderMenuForRestaurant(restaurantKey) {
+            const menuItems = document.getElementById('menuItems');
+            const menu = menusByRestaurant[restaurantKey] || [];
+            menuItems.innerHTML = menu.map((item, idx) => `
+                <div class='bg-white rounded-xl shadow p-4 flex flex-col items-center'>
+                    <img id='menu-img-${idx}' src='${item.image}' alt='${item.name}' class='w-32 h-32 object-cover rounded-lg mb-3 border' />
+                    <label class='mb-2 text-sm text-gray-600 font-bold'>${item.name}</label>
+                    <div class='text-xs text-gray-500 mb-2'>${item.description}</div>
+                    <div class='mb-2 text-orange-600 font-semibold'>₹${item.price}</div>
+                    <input type='file' accept='image/*' class='mb-2' onchange='handleMenuImageUpload(event, ${idx})' />
+                    <button class='bg-orange-500 text-white px-4 py-1 rounded mt-2'>Add to Cart</button>
+                </div>
+            `).join('');
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get selected restaurant key from localStorage or default to 'kfc'
+            let selectedRestaurant = localStorage.getItem('selectedRestaurantKey') || 'kfc';
+            renderMenuForRestaurant(selectedRestaurant);
+        });
+        const cart = { items: [], total: 0 };
+
+        // Render menu items, about, and categories
+        function renderMenu() {
+            const menuContainer = document.getElementById('menuItems');
+            const selected = JSON.parse(localStorage.getItem('selectedRestaurant') || '{}');
+            const list = menusByRestaurant[selected.id] || [];
+            // header
+            document.getElementById('restName').textContent = selected.name || 'Restaurant';
+            const hero = document.getElementById('restHero');
+            if (selected.image) { hero.src = selected.image; hero.alt = selected.name; }
+            // about
+            const meta = restaurantsMeta[selected.id] || {};
+            document.getElementById('restCuisines').textContent = meta.cuisines || '';
+            document.getElementById('restLocation').textContent = meta.location || '';
+            document.getElementById('restRating').textContent = '⭐ ' + (meta.rating || '4.4');
+            document.getElementById('restEta').textContent = meta.eta || '--';
+            document.getElementById('restCost').textContent = meta.costForTwo || '--';
+            // group by category
+            const byCategory = {};
+            list.forEach(i => { const c = i.category || 'Recommended'; (byCategory[c] ||= []).push(i); });
+
+            // build chips and menu panel
+            const chips = document.getElementById('categoryChips');
+            const panelList = document.getElementById('menuPanelList');
+            chips.innerHTML = '';
+            panelList.innerHTML = '';
+
+            Object.keys(byCategory).forEach(cat => {
+                const chip = document.createElement('button');
+                chip.className = 'px-3 py-1 rounded-full border text-sm hover:bg-gray-50';
+                chip.textContent = cat;
+                chip.addEventListener('click', () => {
+                    const el = document.getElementById('sec-'+cat);
+                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                });
+                chips.appendChild(chip);
+
+                const item = document.createElement('div');
+                item.className = 'text-sm cursor-pointer hover:underline';
+                item.textContent = cat;
+                item.addEventListener('click', () => {
+                    const el = document.getElementById('sec-'+cat);
+                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    document.getElementById('menuPanel').classList.add('hidden');
+                });
+                panelList.appendChild(item);
+            });
+
+            // render sections
+            menuContainer.innerHTML = '';
+            Object.entries(byCategory).forEach(([cat, items]) => {
+                const header = document.createElement('h2');
+                header.id = 'sec-'+cat;
+                header.className = 'col-span-full text-lg font-semibold text-gray-800 mt-6';
+                header.textContent = cat;
+                menuContainer.appendChild(header);
+
+                items.forEach(item => {
+                const itemElement = document.createElement('div');
+                itemElement.className = 'bg-white p-4 rounded-lg shadow';
+                itemElement.innerHTML = `
+                        <img src="${item.image || selected.image || ''}" alt="${item.name}" class="w-full h-40 object-cover rounded mb-3" />
+                    <h3 class="text-lg font-semibold">${item.name}</h3>
+                    <p class="text-gray-600">${item.description}</p>
+                    <div class="flex justify-between items-center mt-4">
+                        <span class="text-lg">₹${item.price}</span>
+                            <button onclick="addToCart('${item.id}')" class="bg-orange-600 text-white px-4 py-2 rounded">Add</button>
+                    </div>
+                `;
+                menuContainer.appendChild(itemElement);
+                });
+            });
+        }
+
+        // Add item to cart
+        function addToCart(itemId) {
+            const selected = JSON.parse(localStorage.getItem('selectedRestaurant') || '{}');
+            const list = menusByRestaurant[selected.id] || [];
+            const item = list.find(i => i.id === itemId);
+            if (item) {
+                cart.items.push(item);
+                cart.total += item.price;
+                updateCartUI();
+                // persist to site-wide cart used by checkout
+                const globalCart = JSON.parse(localStorage.getItem('cart')||'[]');
+                const existing = globalCart.find(x => x.id === (selected.name + ' - ' + item.name));
+                const mapped = { id: selected.name + ' - ' + item.name, title: item.name, price: item.price, qty: 1, image: item.image || selected.image, badge: selected.name };
+                if(existing){ existing.qty += 1; } else { globalCart.push(mapped); }
+                localStorage.setItem('cart', JSON.stringify(globalCart));
+            }
+        }
+
+        // Update cart UI
+        function updateCartUI() {
+            const cartItems = document.getElementById('cartItems');
+            const cartCount = document.getElementById('cartCount');
+            const cartTotal = document.getElementById('cartTotal');
+
+            cartCount.textContent = cart.items.length;
+            cartTotal.textContent = `₹${cart.total}`;
+
+            cartItems.innerHTML = cart.items.map(item => `
+                <div class="flex justify-between items-center">
+                    <span>${item.name}</span>
+                    <span>₹${item.price}</span>
+                </div>
+            `).join('');
+        }
+
+        // Toggle cart sidebar
+        document.getElementById('cartBtn').addEventListener('click', () => {
+            document.getElementById('cartSidebar').classList.toggle('translate-x-full');
+        });
+
+        document.getElementById('closeCart').addEventListener('click', () => {
+            document.getElementById('cartSidebar').classList.add('translate-x-full');
+        });
+
+        document.getElementById('checkoutBtn').addEventListener('click', () => {
+            if (!cart.items.length) { alert('Add items to cart first'); return; }
+            window.location.href = 'payment.html';
+        });
+
+        // Floating menu interactions
+        const menuFab = document.getElementById('menuFab');
+        const menuPanel = document.getElementById('menuPanel');
+        menuFab.addEventListener('click', () => { menuPanel.classList.toggle('hidden'); });
+        document.addEventListener('click', (e) => {
+            const t = e.target;
+            if (!menuPanel.contains(t) && t !== menuFab) menuPanel.classList.add('hidden');
+        });
+
+        // Initialize
+        renderMenu();
+    </script>
+</body>
+</html>

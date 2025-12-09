@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Your Account | Food Delivery</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root { --bg:#ffffff; --text:#1a202c; --panel:#ffffff; --ring:#e2e8f0; }
+    .dark :root, .dark { --bg:#0f172a; --text:#e5e7eb; --panel:#0b1220; --ring:#1f2937; }
+    body { background: var(--bg); color: var(--text); }
+    header, .sidebar, .main-content { background: var(--panel); }
+    .nav-item { border-color: var(--ring); }
+    /* Reset and base styles */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f8fafc;
+      margin: 0;
+      padding: 0;
+      color: #1a202c;
+      line-height: 1.6;
+    }
+    
+    a {
+      text-decoration: none;
+      color: #f97316;
+    }
+    
+    /* Header */
+    header {
+      background: white;
+      padding: 15px 30px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+    
+    header .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      color: #1e293b;
+      font-size: 1.3rem;
+      user-select: none;
+    }
+    
+    header .logo img {
+      height: 36px;
+      width: 36px;
+    }
+    
+    header .nav-right {
+      display: flex;
+      gap: 25px;
+      align-items: center;
+      font-weight: 500;
+    }
+    
+    header .nav-right span {
+      cursor: pointer;
+      color: #475569;
+      transition: color 0.2s;
+    }
+    
+    header .nav-right span:hover {
+      color: #f97316;
+    }
+    
+    .help-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      background: #f97316;
+      color: white;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    
+    .help-btn:hover {
+      background: #ea580c;
+      color: white;
+      transform: translateY(-1px);
+    }
+    
+    /* Main container */
+    .container {
+      max-width: 1200px;
+      margin: 30px auto;
+      padding: 0 20px;
+      display: flex;
+      gap: 30px;
+    }
+    
+    /* Sidebar */
+    .sidebar {
+      flex: 1;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      padding: 25px;
+      height: fit-content;
+    }
+    
+    .profile-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+    
+    .profile-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: #f97316;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-size: 1.5rem;
+      font-weight: 700;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .profile-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .profile-info h2 {
+      font-size: 1.25rem;
+      margin-bottom: 5px;
+    }
+    
+    .profile-info p {
+      color: #64748b;
+      font-size: 0.9rem;
+    }
+    
+    .nav-menu {
+      list-style: none;
+    }
+    
+    .nav-item {
+      padding: 15px 0;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 600;
+      color: #475569;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    
+    .nav-item:hover {
+      color: #f97316;
+    }
+    
+    .nav-item.active {
+      color: #f97316;
+    }
+    
+    .nav-item i {
+      width: 20px;
+      text-align: center;
+    }
+    
+    /* Main content */
+    .main-content {
+      flex: 3;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      padding: 25px;
+    }
+    
+    .content-header {
+      margin-bottom: 25px;
+    }
+    
+    .content-header h1 {
+      font-size: 1.5rem;
+      color: #1e293b;
+      margin-bottom: 10px;
+    }
+    
+    .content-header p {
+      color: #64748b;
+    }
+    
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+    }
+    
+    .empty-icon {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 20px;
+      background: #f1f5f9;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #cbd5e0;
+    }
+    
+    .empty-icon i {
+      font-size: 3rem;
+    }
+    
+    .empty-state h2 {
+      font-size: 1.5rem;
+      color: #475569;
+      margin-bottom: 15px;
+    }
+    
+    .empty-state p {
+      color: #64748b;
+      max-width: 500px;
+      margin: 0 auto 30px;
+      line-height: 1.6;
+    }
+    
+    .cta-button {
+      background: #f97316;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .cta-button:hover {
+      background: #ea580c;
+    }
+    
+    /* Order cards */
+    .order-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    
+    .order-card {
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      gap: 20px;
+      transition: box-shadow 0.3s ease;
+    }
+    
+    .order-card:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    .order-image {
+      width: 100px;
+      height: 100px;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+    
+    .order-details {
+      flex-grow: 1;
+    }
+    
+    .order-details h3 {
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+    }
+    
+    .order-info {
+      color: #64748b;
+      font-size: 0.9rem;
+      margin-bottom: 12px;
+    }
+    
+    .order-price {
+      font-weight: 700;
+      color: #1e293b;
+    }
+    
+    .order-actions {
+      display: flex;
+      gap: 12px;
+    }
+    
+    .action-button {
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    
+    .reorder-button {
+      background: #f97316;
+      color: white;
+      border: none;
+    }
+    
+    .help-button {
+      background: white;
+      color: #475569;
+      border: 1px solid #cbd5e0;
+    }
+    
+    /* Tracking styles */
+    .tracking-container {
+      margin-top: 20px;
+    }
+    
+    .tracking-steps {
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+      margin: 30px 0;
+    }
+    
+    .tracking-steps::before {
+      content: '';
+      position: absolute;
+      top: 15px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: #e2e8f0;
+      z-index: 1;
+    }
+    
+    .tracking-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      z-index: 2;
+    }
+    
+    .step-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: white;
+      border: 2px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 8px;
+      color: #64748b;
+    }
+    
+    .step-active .step-icon {
+      background: #f97316;
+      border-color: #f97316;
+      color: white;
+    }
+    
+    .step-label {
+      font-size: 0.8rem;
+      color: #64748b;
+      text-align: center;
+    }
+    
+    .step-active .step-label {
+      color: #f97316;
+      font-weight: 600;
+    }
+    
+    /* Favorites grid */
+    .favorites-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+    }
+    
+    .favorite-card {
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      overflow: hidden;
+      transition: transform 0.3s ease;
+    }
+    
+    .favorite-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .favorite-image {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+    }
+    
+    .favorite-details {
+      padding: 15px;
+    }
+    
+    .favorite-details h3 {
+      font-size: 1rem;
+      margin-bottom: 5px;
+    }
+    
+    .favorite-details p {
+      color: #64748b;
+      font-size: 0.85rem;
+      margin-bottom: 10px;
+    }
+    
+    .favorite-price {
+      font-weight: 700;
+      color: #1e293b;
+    }
+    
+    /* Offers grid */
+    .offers-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+    }
+    
+    .offer-card {
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 20px;
+      background: linear-gradient(135deg, #ffedd5, #fed7aa);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .offer-card::before {
+      content: '';
+      position: absolute;
+      top: -50px;
+      right: -50px;
+      width: 100px;
+      height: 100px;
+      background: rgba(249, 115, 22, 0.1);
+      border-radius: 50%;
+    }
+    
+    .offer-card h3 {
+      font-size: 1.1rem;
+      margin-bottom: 10px;
+      color: #1e293b;
+    }
+    
+    .offer-card p {
+      color: #475569;
+      font-size: 0.9rem;
+      margin-bottom: 15px;
+    }
+    
+    .offer-code {
+      display: inline-block;
+      background: white;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-weight: 700;
+      color: #f97316;
+      border: 1px dashed #f97316;
+    }
+    
+    /* Profile form */
+    .profile-form {
+      max-width: 500px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #374151;
+    }
+    
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+    }
+    
+    .form-group input:focus, .form-group select:focus {
+      outline: none;
+      border-color: #f97316;
+      box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+    }
+    
+    .profile-picture-upload {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .profile-picture-preview {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 2px solid #e2e8f0;
+    }
+    
+    .profile-picture-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .upload-button {
+      background: #f97316;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    
+    .save-button {
+      background: #f97316;
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1rem;
+      margin-top: 10px;
+    }
+    
+    /* Responsive design */
+    @media (max-width: 900px) {
+      .container {
+        flex-direction: column;
+      }
+      
+      .sidebar {
+        width: 100%;
+      }
+    }
+    
+    @media (max-width: 600px) {
+      header {
+        padding: 15px 20px;
+      }
+      
+      .container {
+        padding: 0 15px;
+      }
+      
+      .order-card {
+        flex-direction: column;
+      }
+      
+      .order-image {
+        width: 100%;
+        height: 180px;
+      }
+      
+      .favorites-grid, .offers-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <button id="dmBtn" style="position:fixed;top:12px;right:12px;z-index:50;background:#f97316;color:#fff;border:none;border-radius:9999px;width:40px;height:40px;cursor:pointer">🌓</button>
+  <header>
+    <div class="logo">
+      <img src="https://cdn-icons-png.flaticon.com/512/2838/2838912.png" alt="logo"/>
+      <a href="swiggyhome.html" style="color:#1e293b; text-decoration:none;">FOOD DELIVERY</a>
+    </div> 
+    <nav class="nav-right">
+      <a href="help.html" class="help-btn">
+        <i class="fas fa-question-circle"></i>
+        Help
+      </a>
+      <a href="my acc.html">User</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="profile-header">
+        <div class="profile-avatar" id="profileAvatar">
+          <span id="avatarInitials">JEM</span>
+        </div>
+        <div class="profile-info">
+          <h2 id="profileName">User</h2>
+          <p id="profileContact">8078998813 • junaelsamathew@gmail.com</p>
+        </div>
+      </div>
+      
+      <ul class="nav-menu">
+        <li class="nav-item active" data-section="orders">
+          <i class="fas fa-clipboard-list"></i>
+          <span>Orders</span>
+        </li>
+        <li class="nav-item" data-section="track">
+          <i class="fas fa-truck"></i>
+          <span>Track Orders</span>
+        </li>
+        <li class="nav-item" data-section="favorites">
+          <i class="fas fa-heart"></i>
+          <span>Favorites</span>
+        </li>
+        <li class="nav-item" data-section="addresses">
+          <i class="fas fa-map-marker-alt"></i>
+          <span>Addresses</span>
+        </li>
+        <li class="nav-item" data-section="payments">
+          <i class="fas fa-wallet"></i>
+          <span>Payments</span>
+        </li>
+        <li class="nav-item" data-section="offers">
+          <i class="fas fa-percent"></i>
+          <span>Offers</span>
+        </li>
+        <li class="nav-item" data-section="account">
+          <i class="fas fa-user"></i>
+          <span>Account Settings</span>
+        </li>
+        <li class="nav-item" data-section="help">
+          <i class="fas fa-question-circle"></i>
+          <span>Help & Support</span>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- Main content -->
+    <main class="main-content">
+      <!-- Orders section -->
+      <section id="section-orders">
+        <div class="content-header">
+          <h1>Your Orders</h1>
+          <p>All your orders will be displayed on this page for easy access.</p>
+        </div>
+        <div id="orders-empty" class="empty-state" style="display:none">
+          <div class="empty-icon"><i class="fas fa-shopping-bag"></i></div>
+          <h2>No Orders Yet</h2>
+          <p>You haven't placed any orders yet. When you do, they'll appear here.</p>
+          <a href="swiggyhome.html" class="cta-button"><i class="fas fa-utensils"></i> Order now</a>
+        </div>
+        <div id="orders-list" class="order-cards"></div>
+      </section>
+
+      <!-- Track orders section -->
+      <section id="section-track" style="display:none">
+        <div class="content-header">
+          <h1>Track Orders</h1>
+          <p>View live status of your current orders.</p>
+        </div>
+        <div class="empty-state" id="track-empty" style="display:none">
+          <div class="empty-icon"><i class="fas fa-truck"></i></div>
+          <h2>No Active Deliveries</h2>
+          <p>Place an order to track its delivery in real time.</p>
+        </div>
+        <div id="track-list" class="order-cards"></div>
+      </section>
+
+      <!-- Favorites -->
+      <section id="section-favorites" style="display:none">
+        <div class="content-header">
+          <h1>Favorites</h1>
+          <p>Your saved restaurants and dishes.</p>
+        </div>
+        <div id="favorites-empty" class="empty-state" style="display:none">
+          <div class="empty-icon"><i class="fas fa-heart"></i></div>
+          <h2>No Favorites Yet</h2>
+          <p>Tap the heart icon on a restaurant to add it here.</p>
+        </div>
+        <div id="favorites-list" class="favorites-grid"></div>
+      </section>
+
+      <!-- Addresses -->
+      <section id="section-addresses" style="display:none">
+        <div class="content-header"><h1>Addresses</h1><p>Manage your delivery addresses.</p></div>
+        <div class="empty-state"><div class="empty-icon"><i class="fas fa-map-marker-alt"></i></div><h2>No Addresses</h2><p>Add an address during checkout or here.</p></div>
+      </section>
+
+      <!-- Payments -->
+      <section id="section-payments" style="display:none">
+        <div class="content-header"><h1>Payments</h1><p>Saved payment methods and transactions.</p></div>
+        <div class="empty-state"><div class="empty-icon"><i class="fas fa-wallet"></i></div><h2>No Saved Methods</h2><p>Add a card or UPI during checkout.</p></div>
+      </section>
+
+      <!-- Offers -->
+      <section id="section-offers" style="display:none">
+        <div class="content-header"><h1>Offers</h1><p>Available coupons and promotions.</p></div>
+        <div id="offers-list" class="offers-grid"></div>
+      </section>
+
+      <!-- Account Settings -->
+      <section id="section-account" style="display:none">
+        <div class="content-header"><h1>Account Settings</h1><p>Update your profile information.</p></div>
+        <div class="profile-form">
+          <div class="profile-picture-upload">
+            <div class="profile-picture-preview">
+              <img id="profilePicture" src="" alt="Profile Picture">
+            </div>
+            <div>
+              <input type="file" id="profilePictureInput" accept="image/*" style="display:none">
+              <button class="upload-button" id="uploadPictureBtn">Upload Picture</button>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="fullName">Full Name</label>
+            <input type="text" id="fullName" placeholder="Enter your full name">
+          </div>
+          
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" placeholder="Enter your email">
+          </div>
+          
+          <div class="form-group">
+            <label for="phone">Phone Number</label>
+            <input type="tel" id="phone" placeholder="Enter your phone number">
+          </div>
+          
+          <button class="save-button" id="saveProfileBtn">Save Changes</button>
+        </div>
+      </section>
+
+      <!-- Help & Support -->
+      <section id="section-help" style="display:none">
+        <div class="content-header"><h1>Help & Support</h1><p>We are here to help.</p></div>
+        <div class="empty-state"><div class="empty-icon"><i class="fas fa-question-circle"></i></div><h2>Need help?</h2><p>Visit our <a href="help.html">Help page</a> for FAQs or contact us.</p></div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // dark mode
+      (function(){
+        const saved = localStorage.getItem('theme');
+        if(saved === 'dark') document.documentElement.classList.add('dark');
+        const btn = document.getElementById('dmBtn');
+        btn.addEventListener('click', ()=>{
+          document.documentElement.classList.toggle('dark');
+          localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark':'light');
+        });
+      })();
+      
+      // Load user profile data
+      function loadUserProfile() {
+        const savedName = localStorage.getItem('userName') || 'User';
+        const savedEmail = localStorage.getItem('userEmail') || 'junaelsamathew@gmail.com';
+        const savedPhone = localStorage.getItem('userPhone') || '8078998813';
+        const savedProfilePic = localStorage.getItem('userProfilePic');
+        
+        // Update header and sidebar
+        document.querySelector('nav.nav-right a[href="my acc.html"]').textContent = savedName;
+        document.getElementById('profileName').textContent = savedName;
+        document.getElementById('profileContact').textContent = `${savedPhone} • ${savedEmail}`;
+        
+        // Update profile initials
+        const initials = savedName.split(' ').map(n => n[0]).join('').toUpperCase();
+        document.getElementById('avatarInitials').textContent = initials;
+        
+        // Update profile picture if exists
+        if (savedProfilePic) {
+          document.getElementById('profilePicture').src = savedProfilePic;
+          document.getElementById('avatarInitials').style.display = 'none';
+        }
+        
+        // Update form fields
+        document.getElementById('fullName').value = savedName;
+        document.getElementById('email').value = savedEmail;
+        document.getElementById('phone').value = savedPhone;
+      }
+      
+      // Save user profile data
+      function saveUserProfile() {
+        const fullName = document.getElementById('fullName').value;
+        const email = document.getElementById('email').value;
+        const phone = document.getElementById('phone').value;
+        
+        localStorage.setItem('userName', fullName);
+        localStorage.setItem('userEmail', email);
+        localStorage.setItem('userPhone', phone);
+        
+        loadUserProfile();
+        alert('Profile updated successfully!');
+      }
+      
+      // Profile picture upload
+      document.getElementById('uploadPictureBtn').addEventListener('click', function() {
+        document.getElementById('profilePictureInput').click();
+      });
+      
+      document.getElementById('profilePictureInput').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(event) {
+            const imageData = event.target.result;
+            localStorage.setItem('userProfilePic', imageData);
+            document.getElementById('profilePicture').src = imageData;
+            document.getElementById('avatarInitials').style.display = 'none';
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+      
+      // Save profile button
+      document.getElementById('saveProfileBtn').addEventListener('click', saveUserProfile);
+      
+      // Navigation menu functionality + section switching
+      const navItems = document.querySelectorAll('.nav-item');
+      const sections = document.querySelectorAll('main section[id^="section-"]');
+      
+      function showSection(key){
+        sections.forEach(s => s.style.display = 'none');
+        const el = document.getElementById('section-' + key);
+        if (el) el.style.display = '';
+        
+        // Load section-specific data
+        if (key === 'orders') renderOrders();
+        if (key === 'track') renderTracking();
+        if (key === 'favorites') renderFavorites();
+        if (key === 'offers') renderOffers();
+      }
+      
+      navItems.forEach(item => {
+        item.addEventListener('click', function() {
+          navItems.forEach(i => i.classList.remove('active'));
+          this.classList.add('active');
+          const key = this.getAttribute('data-section');
+          if (key) showSection(key);
+        });
+      });
+      
+      // Render orders from localStorage (show only the latest order)
+      function renderOrders(){
+        const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+        const list = document.getElementById('orders-list');
+        const empty = document.getElementById('orders-empty');
+        
+        list.innerHTML = '';
+        
+        if (!orders.length){
+          empty.style.display = '';
+          return;
+        }
+        
+        empty.style.display = 'none';
+        
+        // Sort orders by timestamp (newest first) and take only the latest
+        orders.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        const latestOrder = orders[0];
+        const itemsList = latestOrder.items.map(item => `${item.qty || 1}x ${item.title}`).join(', ');
+        const orderDate = new Date(latestOrder.timestamp).toLocaleDateString('en-IN');
+        
+        const card = document.createElement('div');
+        card.className = 'order-card';
+        card.innerHTML = `
+          <div class="order-details">
+            <h3>Order #${latestOrder.id.slice(3)}</h3>
+            <div class="order-info">${itemsList}</div>
+            <div class="order-price">₹${latestOrder.total}</div>
+            <div class="order-info">Ordered on: ${orderDate}</div>
+          </div>`;
+        list.appendChild(card);
+      }
+      
+      // Render order tracking (show only the latest order)
+      function renderTracking(){
+        const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+        const list = document.getElementById('track-list');
+        const empty = document.getElementById('track-empty');
+        
+        list.innerHTML = '';
+        
+        if (!orders.length){
+          empty.style.display = '';
+          return;
+        }
+        
+        empty.style.display = 'none';
+        
+        // Sort orders by timestamp (newest first) and take only the latest
+        orders.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        const latestOrder = orders[0];
+        
+        // Determine tracking status based on time elapsed
+        const now = new Date();
+        const orderTime = new Date(latestOrder.timestamp);
+        const timeElapsed = now - orderTime;
+        let statusIndex = 0;
+        if (timeElapsed > 10 * 60 * 1000) statusIndex = 1; // preparing
+        if (timeElapsed > 25 * 60 * 1000) statusIndex = 2; // on the way
+        if (timeElapsed > 45 * 60 * 1000) statusIndex = 3; // delivered
+        
+        const statuses = ['Order Placed', 'Preparing', 'On the Way', 'Delivered'];
+        const itemsList = latestOrder.items.map(item => `${item.qty || 1}x ${item.title}`).join(', ');
+        
+        const card = document.createElement('div');
+        card.className = 'order-card';
+        card.innerHTML = `
+          <div class="order-details" style="width:100%">
+            <h3>Order #${latestOrder.id.slice(3)}</h3>
+            <div class="order-info">${itemsList}</div>
+            <div class="order-price">₹${latestOrder.total}</div>
+            
+            <div class="tracking-container">
+              <div class="tracking-steps">
+                ${statuses.map((status, index) => `
+                  <div class="tracking-step ${index <= statusIndex ? 'step-active' : ''}">
+                    <div class="step-icon">
+                      <i class="fas fa-${index === 0 ? 'check' : index === 1 ? 'utensils' : index === 2 ? 'motorcycle' : 'home'}"></i>
+                    </div>
+                    <div class="step-label">${status}</div>
+                  </div>
+                `).join('')}
+              </div>
+              <div class="order-info">Estimated delivery: ${latestOrder.scheduledDateTimeReadable || '25-30 mins'}</div>
+            </div>
+          </div>`;
+        list.appendChild(card);
+      }
+      
+      // Render favorites
+      function renderFavorites(){
+        const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+        const list = document.getElementById('favorites-list');
+        const empty = document.getElementById('favorites-empty');
+        
+        list.innerHTML = '';
+        
+        if (!favorites.length){
+          empty.style.display = '';
+          return;
+        }
+        
+        empty.style.display = 'none';
+        
+        favorites.forEach(favorite => {
+          const card = document.createElement('div');
+          card.className = 'favorite-card';
+          card.innerHTML = `
+            <img class="favorite-image" src="${favorite.image || 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8Zm9vZHxlbnwwfHwwfHx8MA%3D%3D&w=1000&q=80'}" alt="${favorite.name}">
+            <div class="favorite-details">
+              <h3>${favorite.name}</h3>
+              <p>${favorite.restaurant}</p>
+              <div class="favorite-price">₹${favorite.price}</div>
+            </div>`;
+          list.appendChild(card);
+        });
+      }
+      
+      // Render offers
+      function renderOffers(){
+        const offers = [
+          {
+            title: "First Order Special",
+            description: "Get 50% off up to ₹100 on your first order",
+            code: "FIRST50"
+          },
+          {
+            title: "Weekend Feast",
+            description: "Flat ₹75 off on orders above ₹299",
+            code: "WEEKEND75"
+          },
+          {
+            title: "Free Delivery",
+            description: "Free delivery on all orders above ₹199",
+            code: "FREEDEL"
+          },
+          {
+            title: "Combo Deal",
+            description: "Buy any 2 items and get 1 free",
+            code: "COMBO123"
+          },
+          {
+            title: "Evening Special",
+            description: "30% off on all orders between 7 PM - 10 PM",
+            code: "EVENING30"
+          }
+        ];
+        
+        const list = document.getElementById('offers-list');
+        list.innerHTML = '';
+        
+        offers.forEach(offer => {
+          const card = document.createElement('div');
+          card.className = 'offer-card';
+          card.innerHTML = `
+            <h3>${offer.title}</h3>
+            <p>${offer.description}</p>
+            <div class="offer-code">${offer.code}</div>`;
+          list.appendChild(card);
+        });
+      }
+      
+      // Initialize
+      loadUserProfile();
+      showSection('orders');
+    });
+  </script>
+</body>
+</html>

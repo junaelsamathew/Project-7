@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Cutiepie Cakes - Menu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body class="bg-gray-50">
+    <header class="bg-white shadow-sm p-4 fixed top-0 w-full z-50">
+        <div class="max-w-4xl mx-auto flex items-center justify-between">
+            <a href="swiggyhome.html" class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold">S</div>
+                <span class="font-semibold">Swiggy</span>
+            </a>
+            <h1 class="text-lg font-semibold">Cutiepie Cakes - Menu</h1>
+            <div class="relative">
+                <button id="cartBtn" class="flex items-center">
+                    <i class="fas fa-shopping-cart text-xl"></i>
+                    <span id="cartCount" class="ml-2 bg-orange-600 text-white rounded-full px-2 py-1 text-sm">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Cart Sidebar -->
+    <div id="cartSidebar" class="fixed right-0 top-0 h-full w-80 bg-white shadow-lg transform translate-x-full transition-transform duration-300 ease-in-out z-50">
+        <div class="p-4 h-full overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold">Your Cart</h2>
+                <button id="closeCart" class="text-gray-500"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="cartItems" class="space-y-4 mb-6"></div>
+            <div class="mt-auto border-t pt-4">
+                <div class="flex justify-between mb-2">
+                    <span>Subtotal:</span>
+                    <span id="cartTotal">₹0</span>
+                </div>
+                <button id="checkoutBtn" class="w-full bg-orange-600 text-white py-2 rounded-md">Checkout</button>
+            </div>
+        </div>
+    </div>
+
+    <main class="max-w-4xl mx-auto pt-20 px-4 pb-8">
+        <!-- Restaurant Details -->
+        <section class="bg-white rounded-2xl shadow-sm p-6 mb-6">
+            <div class="flex gap-4 items-start mb-4">
+                <img id="restHero" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTW857MvyNPWIz7TgpJnwVaoc7SRWzRvTO22w&s" alt="Cutiepie Cakes" class="w-32 h-24 object-cover rounded-lg"/>
+                <div class="flex-1">
+                    <h2 id="restName" class="text-2xl font-bold">Cutiepie Cakes</h2>
+                    <p id="restCuisines" class="text-sm text-gray-500">Ice Cream Cakes, Cafe</p>
+                    <p id="restLocation" class="text-sm text-gray-500">Kanjirappally</p>
+                </div>
+            </div>
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
+                <div class="flex gap-4 text-sm">
+                    <div class="text-center">
+                        <div class="font-bold text-green-600" id="restRating">⭐ 4.6</div>
+                        <div class="text-gray-500">Dining Ratings (210)</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="font-bold text-green-600">⭐ 4.7</div>
+                        <div class="text-gray-500">Delivery Ratings (389)</div>
+                    </div>
+                </div>
+                <div class="flex gap-2 text-sm">
+                    <span class="bg-green-100 text-green-800 px-2 py-1 rounded">Open Now</span>
+                    <span>10am - 9pm (Today)</span>
+                </div>
+            </div>
+            <div class="flex justify-between items-center text-sm mb-4">
+                <div>
+                    <div id="restCost">₹400 for two</div>
+                    <div id="restPhone" class="text-gray-500"><i class="fas fa-phone mr-1"></i>+91 9876543222</div>
+                </div>
+                <div class="flex gap-4">
+                    <button id="restDirections" class="text-blue-500 flex items-center"><i class="fas fa-directions mr-1"></i>Directions</button>
+                    <button id="shareBtn" class="text-gray-500 flex items-center"><i class="fas fa-share mr-1"></i>Share</button>
+                    <button id="reviewsBtn" class="text-gray-500 flex items-center"><i class="fas fa-star mr-1"></i>Reviews</button>
+                </div>
+            </div>
+            <div id="restOverview" class="text-gray-600 text-sm">A delightful bakery offering fresh cakes, pastries, and desserts. Perfect for celebrations and sweet cravings.</div>
+        </section>
+
+        <!-- Menu Items -->
+        <section class="bg-white rounded-2xl shadow-sm p-6">
+            <h3 class="font-semibold text-lg mb-4">Sweet Treats</h3>
+            <div id="menuItems" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        </section>
+    </main>
+
+    <script>
+        const restBadge = 'Cutiepie Cakes';
+        const menuItems = [
+            { id: 'chocolatecake', name: 'Chocolate Cake', price: 300, description: 'Rich chocolate cake', image: 'https://www.allrecipes.com/thmb/zb8muWE6CQ5XjclY_LQ2i-QwxN0=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/17981-one-bowl-chocolate-cake-iii-DDMFS-beauty-4x3-d2e182087e4b42a3a281a0a355ea60d1.jpg' },
+            { id: 'icecreamcake', name: 'Ice Cream Cake', price: 400, description: 'Personalized cake', image: 'https://bakingamoment.com/wp-content/uploads/2023/07/IMG_2051-ice-cream-cake.jpg' },
+            { id: 'cupcakes', name: 'Assorted Cupcakes', price: 120, description: 'Variety pack', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT2J1_So29KaBY_QVwscjMBIe8fMeyokXqUcA&s' },
+            { id: 'cheesecake', name: 'Cheesecake', price: 280, description: 'Creamy ricotta filling', image: 'data:image/jpeg;base64,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' },
+            { id: 'macarons', name: 'Macarons', price: 350, description: 'Themed cake', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS6NVYrtH6UrWLeyGCuy1KZRsYO_rn7aNO76w&s' },
+            { id: 'birthdaycake', name: 'Custom Birthday Cake', price: 1299, description: 'Personalized cake with design.', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT-nJsEdTHm_juIT5NVnA_nXEE-gRioPYyKsw&s' }
+        ];
+
+        let globalCart = [];
+        try {
+            globalCart = JSON.parse(localStorage.getItem('cart') || '[]');
+        } catch { globalCart = []; }
+
+        function renderMenu() {
+            const menuItemsEl = document.getElementById('menuItems');
+            menuItemsEl.innerHTML = menuItems.map(item => `
+                <div class="border rounded-2xl p-4 bg-white shadow-sm">
+                    <img src="${item.image}" alt="${item.name}" class="w-full h-40 object-cover rounded-md"/>
+                    <h4 class="mt-3 font-semibold">${item.name}</h4>
+                    <p class="text-sm text-gray-500">${item.description}</p>
+                    <div class="mt-3 text-orange-500 font-semibold">₹${item.price}</div>
+                    <button onclick="addToCart('${item.id}')" class="mt-3 w-full bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600 transition">Add to Cart</button>
+                </div>
+            `).join('');
+        }
+
+        function addToCart(itemId) {
+            const item = menuItems.find(i => i.id === itemId);
+            if (item) {
+                const existing = globalCart.find(c => c.id === itemId && c.badge === restBadge);
+                if (existing) {
+                    existing.qty += 1;
+                } else {
+                    globalCart.push({ ...item, title: item.name, qty: 1, badge: restBadge });
+                }
+                localStorage.setItem('cart', JSON.stringify(globalCart));
+                updateCartUI();
+                document.getElementById('cartSidebar').classList.remove('translate-x-full');
+            }
+        }
+
+        function updateCartUI() {
+            let globalCart = [];
+            try {
+                globalCart = JSON.parse(localStorage.getItem('cart') || '[]');
+            } catch { globalCart = []; }
+            const restaurantCart = globalCart.filter(item => item.badge === restBadge);
+            const cartCount = document.getElementById('cartCount');
+            const cartItemsEl = document.getElementById('cartItems');
+            const cartTotalEl = document.getElementById('cartTotal');
+            const totalItems = restaurantCart.reduce((sum, item) => sum + item.qty, 0);
+            const totalPrice = restaurantCart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+
+            cartCount.textContent = totalItems;
+            cartTotalEl.textContent = `₹${totalPrice}`;
+
+            cartItemsEl.innerHTML = restaurantCart.map(item => `
+                <div class="flex justify-between items-center p-2 border-b">
+                    <div class="flex items-center gap-2">
+                        <img src="${item.image}" alt="${item.name}" class="w-12 h-12 object-cover rounded"/>
+                        <div>
+                            <div class="font-medium">${item.title}</div>
+                            <div class="text-sm text-gray-500">₹${item.price} x ${item.qty}</div>
+                        </div>
+                    </div>
+                    <button onclick="removeFromCart('${item.id}')" class="text-red-500"><i class="fas fa-trash"></i></button>
+                </div>
+            `).join('');
+        }
+
+        function removeFromCart(itemId) {
+            let globalCart = [];
+            try {
+                globalCart = JSON.parse(localStorage.getItem('cart') || '[]');
+            } catch { globalCart = []; }
+            const index = globalCart.findIndex(c => c.id === itemId && c.badge === restBadge);
+            if (index > -1) {
+                if (globalCart[index].qty > 1) {
+                    globalCart[index].qty -= 1;
+                } else {
+                    globalCart.splice(index, 1);
+                }
+                localStorage.setItem('cart', JSON.stringify(globalCart));
+                updateCartUI();
+            }
+        }
+
+        // Event listeners
+        document.getElementById('cartBtn').addEventListener('click', () => {
+            document.getElementById('cartSidebar').classList.toggle('translate-x-full');
+        });
+
+        document.getElementById('closeCart').addEventListener('click', () => {
+            document.getElementById('cartSidebar').classList.add('translate-x-full');
+        });
+
+        document.getElementById('checkoutBtn').addEventListener('click', () => {
+            let globalCart = [];
+            try {
+                globalCart = JSON.parse(localStorage.getItem('cart') || '[]');
+            } catch { globalCart = []; }
+            const restaurantCart = globalCart.filter(item => item.badge === restBadge);
+            if (restaurantCart.length === 0) {
+                alert('Cart is empty');
+                return;
+            }
+            localStorage.setItem('checkoutCart', JSON.stringify(restaurantCart));
+            window.location.href = 'payment.html';
+        });
+
+        document.getElementById('restDirections').addEventListener('click', () => {
+            window.open('https://maps.google.com/?q=Cutiepie+Cakes+Kanjirappally', '_blank');
+        });
+
+        document.getElementById('restPhone').addEventListener('click', () => {
+            window.location.href = 'tel:+919876543222';
+        });
+
+        document.getElementById('shareBtn').addEventListener('click', () => {
+            if (navigator.share) {
+                navigator.share({ title: 'Cutiepie Cakes Menu', url: window.location.href });
+            } else {
+                alert('Share this page: ' + window.location.href);
+            }
+        });
+
+        document.getElementById('reviewsBtn').addEventListener('click', () => {
+            alert('Reviews section - Coming soon!');
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderMenu();
+            updateCartUI();
+        });
+    </script>
+</body>
+</html>

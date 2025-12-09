@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Kottaram Family Restaurant - Menu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body class="bg-gray-50">
+    <header class="bg-white shadow-sm p-4 fixed top-0 w-full z-50">
+        <div class="max-w-4xl mx-auto flex items-center justify-between">
+            <a href="swiggyhome.html" class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold">S</div>
+                <span class="font-semibold">Swiggy</span>
+            </a>
+            <h1 class="text-lg font-semibold">Kottaram Family Restaurant - Menu</h1>
+            <div class="relative">
+                <button id="cartBtn" class="flex items-center">
+                    <i class="fas fa-shopping-cart text-xl"></i>
+                    <span id="cartCount" class="ml-2 bg-orange-600 text-white rounded-full px-2 py-1 text-sm">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Cart Sidebar -->
+    <div id="cartSidebar" class="fixed right-0 top-0 h-full w-80 bg-white shadow-lg transform translate-x-full transition-transform duration-300 ease-in-out z-50">
+        <div class="p-4 h-full overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold">Your Cart</h2>
+                <button id="closeCart" class="text-gray-500"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="cartItems" class="space-y-4 mb-6"></div>
+            <div class="mt-auto border-t pt-4">
+                <div class="flex justify-between mb-2">
+                    <span>Subtotal:</span>
+                    <span id="cartTotal">₹0</span>
+                </div>
+                <button id="checkoutBtn" class="w-full bg-orange-600 text-white py-2 rounded-md">Checkout</button>
+            </div>
+        </div>
+    </div>
+
+    <main class="max-w-4xl mx-auto pt-20 px-4 pb-8">
+        <!-- Restaurant Details -->
+        <section class="bg-white rounded-2xl shadow-sm p-6 mb-6">
+            <div class="flex gap-4 items-start mb-4">
+                <img id="restHero" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRmWX1pT-nFYieWGl-psn3px0O7UqA5I8iqWg&s" alt="Kottaram Family Restaurant" class="w-32 h-24 object-cover rounded-lg"/>
+                <div class="flex-1">
+                    <h2 id="restName" class="text-2xl font-bold">Kottaram Family Restaurant</h2>
+                    <p id="restCuisines" class="text-sm text-gray-500">Kerala, Biryani, Arabian</p>
+                    <p id="restLocation" class="text-sm text-gray-500">Kollam Theni Highway</p>
+                </div>
+            </div>
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
+                <div class="flex gap-4 text-sm">
+                    <div class="text-center">
+                        <div class="font-bold text-green-600" id="restRating">⭐ 4.6</div>
+                        <div class="text-gray-500">Dining Ratings (210)</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="font-bold text-green-600">⭐ 4.7</div>
+                        <div class="text-gray-500">Delivery Ratings (389)</div>
+                    </div>
+                </div>
+                <div class="flex gap-2 text-sm">
+                    <span class="bg-green-100 text-green-800 px-2 py-1 rounded">Open Now</span>
+                    <span>10am - 9pm (Today)</span>
+                </div>
+            </div>
+            <div class="flex justify-between items-center text-sm mb-4">
+                <div>
+                    <div id="restCost">₹400 for two</div>
+                    <div id="restPhone" class="text-gray-500"><i class="fas fa-phone mr-1"></i>+91 9876543234</div>
+                </div>
+                <div class="flex gap-4">
+                    <button id="restDirections" class="text-blue-500 flex items-center"><i class="fas fa-directions mr-1"></i>Directions</button>
+                    <button id="shareBtn" class="text-gray-500 flex items-center"><i class="fas fa-share mr-1"></i>Share</button>
+                    <button id="reviewsBtn" class="text-gray-500 flex items-center"><i class="fas fa-star mr-1"></i>Reviews</button>
+                </div>
+            </div>
+            <div id="restOverview" class="text-gray-600 text-sm">A family-friendly spot serving authentic Kerala, Biryani, and Arabian dishes.</div>
+        </section>
+
+        <!-- Menu Items -->
+        <section class="bg-white rounded-2xl shadow-sm p-6">
+            <h3 class="font-semibold text-lg mb-4">Local Favorites</h3>
+            <div id="menuItems" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        </section>
+    </main>
+
+    <script>
+        const restBadge = 'Kottaram Family Restaurant';
+        const menuItems = [
+            { id: 'keralaparotta', name: 'Kerala Parotta with Chicken Curry', price: 179, description: 'Flaky parotta served with spicy chicken curry.', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQaNRJHPt9mkyudQ_WL2QD1CYmS_-9DwFW0YQ&s' },
+            { id: 'muttonbiryani', name: 'Mutton Biryani', price: 299, description: 'Aromatic mutton biryani.', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSmc0I1lP3I0SAR90Ta357YNSHXmZqv1O4y4g&s' },
+            { id: 'fishcurry', name: 'Kerala Fish Curry', price: 249, description: 'Tangy and spicy fish curry.', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQgeM6zuQj4uQjNPK3mmbCaF_hBHcZrC4ri5w&s' },
+            { id: 'appamstew', name: 'Appam with Stew', price: 139, description: 'Soft appam served with vegetable stew.', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWEIQ4CE-YHtJCog6fv2f03DhnIjTlN0WO7w&s' },
+            { id: 'prawncurry', name: 'Prawn Curry', price: 299, description: 'Spicy prawn curry with coconut base.', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTvG59uJ-UUTzU3L5u95Duj-Plnon1kMmh3wQ&s' }
+        ];
+
+        let globalCart = [];
+        try {
+            globalCart = JSON.parse(localStorage.getItem('cart') || '[]');
+        } catch { globalCart = []; }
+
+        function renderMenu() {
+            const menuItemsEl = document.getElementById('menuItems');
+            menuItemsEl.innerHTML = menuItems.map(item => `
+                <div class="border rounded-2xl p-4 bg-white shadow-sm">
+                    <img src="${item.image}" alt="${item.name}" class="w-full h-40 object-cover rounded-md"/>
+                    <h4 class="mt-3 font-semibold">${item.name}</h4>
+                    <p class="text-sm text-gray-500">${item.description}</p>
+                    <div class="mt-3 text-orange-500 font-semibold">₹${item.price}</div>
+                    <button onclick="addToCart('${item.id}')" class="mt-3 w-full bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600 transition">Add to Cart</button>
+                </div>
+            `).join('');
+        }
+
+        function addToCart(itemId) {
+            const item = menuItems.find(i => i.id === itemId);
+            if (item) {
+                const existing = globalCart.find(c => c.id === itemId && c.badge === restBadge);
+                if (existing) {
+                    existing.qty += 1;
+                } else {
+                    globalCart.push({ ...item, title: item.name, qty: 1, badge: restBadge });
+                }
+                localStorage.setItem('cart', JSON.stringify(globalCart));
+                updateCartUI();
+                document.getElementById('cartSidebar').classList.remove('translate-x-full');
+            }
+        }
+
+        function updateCartUI() {
+            let globalCart = [];
+            try {
+                globalCart = JSON.parse(localStorage.getItem('cart') || '[]');
+            } catch { globalCart = []; }
+            const restaurantCart = globalCart.filter(item => item.badge === restBadge);
+            const cartCount = document.getElementById('cartCount');
+            const cartItemsEl = document.getElementById('cartItems');
+            const cartTotalEl = document.getElementById('cartTotal');
+            const totalItems = restaurantCart.reduce((sum, item) => sum + item.qty, 0);
+            const totalPrice = restaurantCart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+
+            cartCount.textContent = totalItems;
+            cartTotalEl.textContent = `₹${totalPrice}`;
+
+            cartItemsEl.innerHTML = restaurantCart.map(item => `
+                <div class="flex justify-between items-center p-2 border-b">
+                    <div class="flex items-center gap-2">
+                        <img src="${item.image}" alt="${item.name}" class="w-12 h-12 object-cover rounded"/>
+                        <div>
+                            <div class="font-medium">${item.title}</div>
+                            <div class="text-sm text-gray-500">₹${item.price} x ${item.qty}</div>
+                        </div>
+                    </div>
+                    <button onclick="removeFromCart('${item.id}')" class="text-red-500"><i class="fas fa-trash"></i></button>
+                </div>
+            `).join('');
+        }
+
+        function removeFromCart(itemId) {
+            let globalCart = [];
+            try {
+                globalCart = JSON.parse(localStorage.getItem('cart') || '[]');
+            } catch { globalCart = []; }
+            const index = globalCart.findIndex(c => c.id === itemId && c.badge === restBadge);
+            if (index > -1) {
+                if (globalCart[index].qty > 1) {
+                    globalCart[index].qty -= 1;
+                } else {
+                    globalCart.splice(index, 1);
+                }
+                localStorage.setItem('cart', JSON.stringify(globalCart));
+                updateCartUI();
+            }
+        }
+
+        // Event listeners
+        document.getElementById('cartBtn').addEventListener('click', () => {
+            document.getElementById('cartSidebar').classList.toggle('translate-x-full');
+        });
+
+        document.getElementById('closeCart').addEventListener('click', () => {
+            document.getElementById('cartSidebar').classList.add('translate-x-full');
+        });
+
+        document.getElementById('checkoutBtn').addEventListener('click', () => {
+            let globalCart = [];
+            try {
+                globalCart = JSON.parse(localStorage.getItem('cart') || '[]');
+            } catch { globalCart = []; }
+            const restaurantCart = globalCart.filter(item => item.badge === restBadge);
+            if (restaurantCart.length === 0) {
+                alert('Cart is empty');
+                return;
+            }
+            localStorage.setItem('checkoutCart', JSON.stringify(restaurantCart));
+            window.location.href = 'payment.html';
+        });
+
+        document.getElementById('restDirections').addEventListener('click', () => {
+            window.open('https://maps.google.com/?q=Kottaram+Family+Restaurant+Kollam+Theni+Highway', '_blank');
+        });
+
+        document.getElementById('restPhone').addEventListener('click', () => {
+            window.location.href = 'tel:+919876543234';
+        });
+
+        document.getElementById('shareBtn').addEventListener('click', () => {
+            if (navigator.share) {
+                navigator.share({ title: 'Kottaram Family Restaurant Menu', url: window.location.href });
+            } else {
+                alert('Share this page: ' + window.location.href);
+            }
+        });
+
+        document.getElementById('reviewsBtn').addEventListener('click', () => {
+            alert('Reviews section - Coming soon!');
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderMenu();
+            updateCartUI();
+        });
+    </script>
+</body>
+</html>

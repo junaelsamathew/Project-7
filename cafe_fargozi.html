@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Cafe Fargozi - Menu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body class="bg-gray-50">
+    <header class="bg-white shadow-sm p-4 fixed top-0 w-full z-50">
+        <div class="max-w-4xl mx-auto flex items-center justify-between">
+            <a href="swiggyhome.html" class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold">S</div>
+                <span class="font-semibold">Swiggy</span>
+            </a>
+            <h1 class="text-lg font-semibold">Cafe Fargozi - Menu</h1>
+            <div class="relative">
+                <button id="cartBtn" class="flex items-center">
+                    <i class="fas fa-shopping-cart text-xl"></i>
+                    <span id="cartCount" class="ml-2 bg-orange-600 text-white rounded-full px-2 py-1 text-sm">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Cart Sidebar -->
+    <div id="cartSidebar" class="fixed right-0 top-0 h-full w-80 bg-white shadow-lg transform translate-x-full transition-transform duration-300 ease-in-out z-50">
+        <div class="p-4 h-full overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold">Your Cart</h2>
+                <button id="closeCart" class="text-gray-500"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="cartItems" class="space-y-4 mb-6"></div>
+            <div class="mt-auto border-t pt-4">
+                <div class="flex justify-between mb-2">
+                    <span>Subtotal:</span>
+                    <span id="cartTotal">₹0</span>
+                </div>
+                <button id="checkoutBtn" class="w-full bg-orange-600 text-white py-2 rounded-md">Checkout</button>
+            </div>
+        </div>
+    </div>
+
+    <main class="max-w-4xl mx-auto pt-20 px-4 pb-8">
+        <!-- Restaurant Details -->
+        <section class="bg-white rounded-2xl shadow-sm p-6 mb-6">
+            <div class="flex gap-4 items-start mb-4">
+                <img id="restHero" src="data:image/jpeg;base64,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" alt="Cafe Fargozi" class="w-32 h-24 object-cover rounded-lg"/>
+                <div class="flex-1">
+                    <h2 id="restName" class="text-2xl font-bold">Cafe Fargozi</h2>
+                    <p id="restCuisines" class="text-sm text-gray-500">Shawarma, Lebanese</p>
+                    <p id="restLocation" class="text-sm text-gray-500">Downtown</p>
+                </div>
+            </div>
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
+                <div class="flex gap-4 text-sm">
+                    <div class="text-center">
+                        <div class="font-bold text-green-600" id="restRating">⭐ 4.2</div>
+                        <div class="text-gray-500">Dining Ratings (145)</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="font-bold text-green-600">⭐ 4.4</div>
+                        <div class="text-gray-500">Delivery Ratings (321)</div>
+                    </div>
+                </div>
+                <div class="flex gap-2 text-sm">
+                    <span class="bg-green-100 text-green-800 px-2 py-1 rounded">Open Now</span>
+                    <span>10am - 11pm (Today)</span>
+                </div>
+            </div>
+            <div class="flex justify-between items-center text-sm mb-4">
+                <div>
+                    <div id="restCost">₹300 for two</div>
+                    <div id="restPhone" class="text-gray-500"><i class="fas fa-phone mr-1"></i>+91 9876543218</div>
+                </div>
+                <div class="flex gap-4">
+                    <button id="restDirections" class="text-blue-500 flex items-center"><i class="fas fa-directions mr-1"></i>Directions</button>
+                    <button id="shareBtn" class="text-gray-500 flex items-center"><i class="fas fa-share mr-1"></i>Share</button>
+                    <button id="reviewsBtn" class="text-gray-500 flex items-center"><i class="fas fa-star mr-1"></i>Reviews</button>
+                </div>
+            </div>
+            <div id="restOverview" class="text-gray-600 text-sm">A cozy cafe specializing in authentic Lebanese cuisine and shawarma.</div>
+        </section>
+
+        <!-- Menu Items -->
+        <section class="bg-white rounded-2xl shadow-sm p-6">
+            <h3 class="font-semibold text-lg mb-4">Popular</h3>
+            <div id="menuItems" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        </section>
+    </main>
+
+    <script>
+        const menuItems = [
+            { id: 'shawarma', name: 'Chicken Shawarma', price: 129, description: 'Arabian classic roll.', image: 'https://images.unsplash.com/photo-1552332386-f8dd00dc2f85?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.0.3&s=31' },
+            { id: 'falafel', name: 'Falafel Plate', price: 199, description: 'Crispy falafels with hummus.', image: 'https://thefastrecipe.com/wp-content/uploads/2022/02/falafel-plate.jpg' },
+            { id: 'hummus', name: 'Hummus & Pita', price: 149, description: 'Creamy hummus served with warm pita.', image: 'https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.0.3&s=6' },
+            { id: 'tabbouleh', name: 'Tabbouleh Salad', price: 179, description: 'Fresh herb and bulgur salad.', image: 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.0.3&s=8' },
+            { id: 'kebab', name: 'Mixed Kebab Platter', price: 349, description: 'Selection of grilled kebabs.', image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.0.3&s=39' }
+        ];
+
+        const cart = JSON.parse(localStorage.getItem('cafefargoziCart') || '[]');
+
+        function renderMenu() {
+            const menuItemsEl = document.getElementById('menuItems');
+            menuItemsEl.innerHTML = menuItems.map(item => `
+                <div class="border rounded-2xl p-4 bg-white shadow-sm">
+                    <img src="${item.image}" alt="${item.name}" class="w-full h-40 object-cover rounded-md"/>
+                    <h4 class="mt-3 font-semibold">${item.name}</h4>
+                    <p class="text-sm text-gray-500">${item.description}</p>
+                    <div class="mt-3 text-orange-500 font-semibold">₹${item.price}</div>
+                    <button onclick="addToCart('${item.id}')" class="mt-3 w-full bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600 transition">Add to Cart</button>
+                </div>
+            `).join('');
+        }
+
+        function addToCart(itemId) {
+            const item = menuItems.find(i => i.id === itemId);
+            if (item) {
+                const existing = cart.find(c => c.id === itemId);
+                if (existing) {
+                    existing.qty += 1;
+                } else {
+                    cart.push({ ...item, qty: 1 });
+                }
+                localStorage.setItem('cafefargoziCart', JSON.stringify(cart));
+                updateCartUI();
+                document.getElementById('cartSidebar').classList.remove('translate-x-full');
+            }
+        }
+
+        function updateCartUI() {
+            const cartCount = document.getElementById('cartCount');
+            const cartItemsEl = document.getElementById('cartItems');
+            const cartTotalEl = document.getElementById('cartTotal');
+            const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+            const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+
+            cartCount.textContent = totalItems;
+            cartTotalEl.textContent = `₹${totalPrice}`;
+
+            cartItemsEl.innerHTML = cart.map(item => `
+                <div class="flex justify-between items-center p-2 border-b">
+                    <div class="flex items-center gap-2">
+                        <img src="${item.image}" alt="${item.name}" class="w-12 h-12 object-cover rounded"/>
+                        <div>
+                            <div class="font-medium">${item.name}</div>
+                            <div class="text-sm text-gray-500">₹${item.price} x ${item.qty}</div>
+                        </div>
+                    </div>
+                    <button onclick="removeFromCart('${item.id}')" class="text-red-500"><i class="fas fa-trash"></i></button>
+                </div>
+            `).join('');
+        }
+
+        function removeFromCart(itemId) {
+            const index = cart.findIndex(c => c.id === itemId);
+            if (index > -1) {
+                if (cart[index].qty > 1) {
+                    cart[index].qty -= 1;
+                } else {
+                    cart.splice(index, 1);
+                }
+                localStorage.setItem('cafefargoziCart', JSON.stringify(cart));
+                updateCartUI();
+            }
+        }
+
+        // Event listeners
+        document.getElementById('cartBtn').addEventListener('click', () => {
+            document.getElementById('cartSidebar').classList.toggle('translate-x-full');
+        });
+
+        document.getElementById('closeCart').addEventListener('click', () => {
+            document.getElementById('cartSidebar').classList.add('translate-x-full');
+        });
+
+        document.getElementById('checkoutBtn').addEventListener('click', () => {
+            if (cart.length === 0) {
+                alert('Cart is empty');
+                return;
+            }
+            localStorage.setItem('checkoutCart', JSON.stringify(cart));
+            window.location.href = 'payment.html';
+        });
+
+        document.getElementById('restDirections').addEventListener('click', () => {
+            window.open('https://maps.google.com/?q=Cafe+Fargozi+Downtown', '_blank');
+        });
+
+        document.getElementById('restPhone').addEventListener('click', () => {
+            window.location.href = 'tel:+919876543218';
+        });
+
+        document.getElementById('shareBtn').addEventListener('click', () => {
+            if (navigator.share) {
+                navigator.share({ title: 'Cafe Fargozi Menu', url: window.location.href });
+            } else {
+                alert('Share this page: ' + window.location.href);
+            }
+        });
+
+        document.getElementById('reviewsBtn').addEventListener('click', () => {
+            alert('Reviews section - Coming soon!');
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderMenu();
+            updateCartUI();
+        });
+    </script>
+</body>
+</html>
